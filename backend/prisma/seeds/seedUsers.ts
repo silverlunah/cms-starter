@@ -9,8 +9,8 @@ export async function seedUsers() {
   await prisma.user.upsert({
     where: { email: "admin@admin.com" },
     update: {
-      firstName: "Jann",
-      lastName: "Espino",
+      firstName: "CMS",
+      lastName: "Admin",
       password,
       role: 0,
       isActive: true,
@@ -19,8 +19,8 @@ export async function seedUsers() {
     create: {
       email: "admin@admin.com",
       password,
-      firstName: "Jann",
-      lastName: "Espino",
+      firstName: "CMS",
+      lastName: "Admin",
       role: 0,
       isActive: true,
       createdAt: new Date(),
