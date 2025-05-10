@@ -47,3 +47,10 @@ npx prisma migrate dev --name migration-name
 ## Do Not Forget
 
 1. Add your main website's URL to allowed_hosts db
+
+## Initial Login
+
+On first login, you can use:
+
+- Email: admin@admin.com
+- Password: test
