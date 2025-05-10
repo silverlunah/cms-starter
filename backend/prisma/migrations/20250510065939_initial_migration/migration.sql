@@ -1,9 +1,3 @@
--- TODO: remove this after prod deploy
-DROP TABLE `AllowedHosts`;
-
--- TODO: remove this after prod deploy
-DROP TABLE `User`;
-
 -- CreateTable
 CREATE TABLE `user` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
