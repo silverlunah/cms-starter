@@ -8,7 +8,7 @@
 
 <button
   {type}
-  class={"btn btn-soft btn-success " + additionalClass}
+  class={"btn btn-success " + additionalClass}
   on:click={onclick}
   {disabled}
 >

@@ -3,8 +3,8 @@
   import { onMount } from "svelte";
   import type { User, RawUser, UsersResponse } from "$lib/types/user";
   import { formatTimeAndDateUS, triggerModal } from "$lib/utils/common";
-  import ModalCreateUser from "$lib/components/modals/ModalCreateUser.svelte";
-  import ModalUpdateUser from "$lib/components/modals/ModalUpdateUser.svelte";
+  import ModalCreateUser from "./modals/ModalCreateUser.svelte";
+  import ModalUpdateUser from "./modals/ModalUpdateUser.svelte";
   import ButtonAdd from "$lib/components/buttons/ButtonAdd.svelte";
   import DefaultAvatar from "$lib/components/user/DefaultAvatar.svelte";
   import InputSearch from "$lib/components/inputs/InputSearch.svelte";
@@ -47,14 +47,19 @@
   <title>Users</title>
 </svelte:head>
 
-<div class="relative text-white flex flex-col items-center justify-end p-4">
+<div
+  class="relative text-base-content flex flex-col items-center justify-end p-4"
+>
   {#if error}
     <p class="text-red-500">{error}</p>
   {:else if users.length === 0}
     <p>Loading users...</p>
   {:else}
     <div class="card w-96 md:w-3xl pixel-p p-4 text-center">
-      <SectionHeading title="User Management" description="Manage your users in this page. Create, add, disable, and delete users. You can also change or assign roles."/>
+      <SectionHeading
+        title="User Management"
+        description="Manage your users in this page. Create, add, disable, and delete users. You can also change or assign roles."
+      />
       <div class="flex gap-4">
         <InputSearch
           placeholder="Search"
@@ -116,11 +121,11 @@
                       size="sm"
                     />
                     <div>
-                      <div class="font-bold">
+                      <div class="font-bold text-base-content">
                         {user.firstName}
                         {user.lastName}
                       </div>
-                      <div class="text-sm opacity-50">{user.email}</div>
+                      <div class="text-sm dark:text-gray-400">{user.email}</div>
                     </div>
                   </div>
                 </td>

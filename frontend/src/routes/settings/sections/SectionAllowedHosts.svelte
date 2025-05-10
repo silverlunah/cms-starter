@@ -271,13 +271,13 @@
                 <td class="text-left">
                   <input
                     bind:value={createDisplayName}
-                    class="input text-white min-w-44 {fieldErrors.createDisplayName
+                    class="input min-w-44 {fieldErrors.createDisplayName
                       ? 'input-error'
                       : ''}"
                     placeholder="Display Name"
                   />
                   {#if fieldErrors.createDisplayName}
-                    <p class="label input-label-warning">
+                    <p class="label text-error">
                       {fieldErrors.createDisplayName}
                     </p>
                   {/if}
@@ -285,13 +285,13 @@
                 <td class="text-left">
                   <input
                     bind:value={createUrl}
-                    class="input text-white min-w-44 {fieldErrors.createUrl
+                    class="input min-w-44 {fieldErrors.createUrl
                       ? 'input-error'
                       : ''}"
                     placeholder="URL"
                   />
                   {#if fieldErrors.createUrl}
-                    <p class="label input-label-warning">
+                    <p class="label text-error">
                       {fieldErrors.createUrl}
                     </p>
                   {/if}
@@ -328,7 +328,7 @@
                   {#if editingDisplayNameId === Number(allowedHost.id) && normalizeUrl(allowedHost.url) !== normalizeUrl(window.location.origin)}
                     <input
                       bind:value={editedValue}
-                      class="input text-white min-w-44 {fieldErrors.updateDisplayName
+                      class="input min-w-44 {fieldErrors.updateDisplayName
                         ? 'input-error'
                         : ''}"
                       on:blur={(e) =>
@@ -346,7 +346,7 @@
                       autofocus
                     />
                     {#if fieldErrors.updateDisplayName}
-                      <p class="label input-label-warning">
+                      <p class="label text-error">
                         {fieldErrors.updateDisplayName}
                       </p>
                     {/if}
@@ -382,7 +382,7 @@
                   {#if editingUrlId === Number(allowedHost.id) && normalizeUrl(allowedHost.url) !== normalizeUrl(window.location.origin)}
                     <input
                       bind:value={editedValue}
-                      class="input text-white min-w-44 {fieldErrors.updateUrl
+                      class="input min-w-44 {fieldErrors.updateUrl
                         ? 'input-error'
                         : ''}"
                       on:blur={(e) =>
@@ -392,7 +392,7 @@
                       autofocus
                     />
                     {#if fieldErrors.updateUrl}
-                      <p class="label input-label-warning">
+                      <p class="label text-error">
                         {fieldErrors.updateUrl}
                       </p>
                     {/if}

@@ -8,7 +8,7 @@
 
 <button
   {type}
-  class={"btn btn-soft btn-error " + additionalClass}
+  class={"btn btn-error " + additionalClass}
   on:click={onclick}
   {disabled}
 >

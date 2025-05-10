@@ -111,7 +111,7 @@ export async function allowedHostsRoutes(fastify: FastifyInstance) {
   );
 
   fastify.delete(
-    "/allowed-hosts/:id",
+    "/allowed-host/:id",
     { preHandler: [verifyJWT] },
     async (request, reply) => {
       const { id } = request.params as { id: string };
@@ -126,9 +126,9 @@ export async function allowedHostsRoutes(fastify: FastifyInstance) {
         if (
           error instanceof Error &&
           (error.message.includes("Record to delete does not exist") ||
-            error.message.includes("No User found"))
+            error.message.includes("No Allowed Host found"))
         ) {
-          reply.status(404).send({ error: "User not found" });
+          reply.status(404).send({ error: " Allowed Host not found" });
         } else if (error instanceof Error) {
           reply.status(400).send({ error: error.message });
         } else {

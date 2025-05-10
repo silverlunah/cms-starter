@@ -5,7 +5,7 @@
   export let type: "button" | "submit" | "reset" = "button";
 </script>
 
-<button {type} class={"btn btn-soft " + additionalClass} on:click={onclick}>
+<button {type} class={"btn " + additionalClass} on:click={onclick}>
   <svg
     xmlns="http://www.w3.org/2000/svg"
     fill="none"

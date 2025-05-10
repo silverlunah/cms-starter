@@ -1,28 +1,8 @@
-<script lang="ts">
-  import { goto } from "$app/navigation";
-  import { PUBLIC_API_URL } from "$env/static/public";
-  import { isLoggedIn } from "$lib/stores/auth";
+<script>
+  import ButtonLogout from "./buttons/ButtonLogout.svelte";
+  import ToggleTheme from "./toggles/ToggleTheme.svelte";
 
-  /**-----------------------
-   * 
-   *    Logout function
-   * 
-  -----------------------*/
-  async function handleLogout() {
-    // Call the server-side logout endpoint
-    await fetch(PUBLIC_API_URL + "/logout", {
-      method: "GET",
-      credentials: "include",
-    });
-
-    // Clear store
-    isLoggedIn.set(false);
-
-    // Redirect to the home page
-    goto("/");
-  }
 </script>
-
 <div class="navbar bg-base-100 shadow-sm sticky top-0 z-50 w-auto">
   <div class="navbar-start">
     <a href="/" class="ml-4 pixel-h1 text-xl">Back Office</a>
@@ -63,52 +43,17 @@
           <li><a class="pixel-p text-md" href="/dashboard">Dashboard</a></li>
           <li><a class="pixel-p text-md" href="/users">Users</a></li>
           <li><a class="pixel-p text-md" href="/settings">Settings</a></li>
-          <li>
-            <a
-              href="#"
-              on:click={handleLogout}
-              class="text-md"
-              aria-label="mobile logout button"
-            >
-              Logout
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="size-6"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"
-                />
-              </svg>
-            </a>
-          </li>
+          <div class="flex justify-center gap-2">
+            <ToggleTheme additionalClass="mt-1.75"/>
+            <ButtonLogout />
+          </div>
         </ul>
       </div>
-      <button
-        on:click={handleLogout}
-        class="btn btn-ghost btn-square hidden lg:flex"
-        aria-label="web logout button"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-          class="size-6"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"
-          />
-        </svg>
-      </button>
+
+      <div class="flex justify-between gap-2">
+        <ToggleTheme additionalClass="hidden lg:flex"/>
+        <ButtonLogout additionalClass="hidden lg:flex"/>
+      </div>
     </div>
   </div>
 </div>

@@ -4,10 +4,7 @@
   export let additionalClass: string = "";
 </script>
 
-<button
-  class={"btn btn-soft btn-success " + additionalClass}
-  on:click={onclick}
->
+<button class={"btn btn-success " + additionalClass} on:click={onclick}>
   <svg
     xmlns="http://www.w3.org/2000/svg"
     fill="none"

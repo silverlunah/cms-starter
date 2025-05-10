@@ -13,11 +13,11 @@ export async function seedAllowedHosts() {
     where: { url: host },
     update: {
       url: host,
-      displayName: "Back Office Frontend URL",
+      displayName: "Your Current URL",
     },
     create: {
       url: host,
-      displayName: "Back Office Frontend URL",
+      displayName: "Your Current URL",
     },
   });
 

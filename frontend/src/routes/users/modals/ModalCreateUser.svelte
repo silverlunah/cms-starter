@@ -1,16 +1,11 @@
 <script lang="ts">
   import { z } from "zod";
   import { onMount } from "svelte";
-  import { PUBLIC_API_URL } from "$env/static/public";
   import type { User } from "$lib/types/user";
-  import {
-    toProperCase,
-    closeModal,
-    getFirstAndLastNameInitials,
-  } from "$lib/utils/common";
-  import ButtonAdd from "../buttons/ButtonAdd.svelte";
-  import ButtonClose from "../buttons/ButtonClose.svelte";
-  import DefaultAvatar from "../user/DefaultAvatar.svelte";
+  import { closeModal } from "$lib/utils/common";
+  import ButtonAdd from "../../../lib/components/buttons/ButtonAdd.svelte";
+  import ButtonClose from "../../../lib/components/buttons/ButtonClose.svelte";
+  import DefaultAvatar from "../../../lib/components/user/DefaultAvatar.svelte";
   import { createUser } from "$lib/api";
 
   export let selectedUser: User | null = null;
@@ -168,7 +163,7 @@
               bind:value={firstName}
             />
             {#if fieldErrors.firstName}
-              <p class="label input-label-warning">{fieldErrors.firstName}</p>
+              <p class="label text-error">{fieldErrors.firstName}</p>
             {/if}
           </fieldset>
           <fieldset class="fieldset w-1/2">
@@ -180,7 +175,7 @@
               bind:value={lastName}
             />
             {#if fieldErrors.lastName}
-              <p class="label input-label-warning">{fieldErrors.lastName}</p>
+              <p class="label text-error">{fieldErrors.lastName}</p>
             {/if}
           </fieldset>
         </div>
@@ -193,7 +188,7 @@
             bind:value={email}
           />
           {#if fieldErrors.email}
-            <p class="label input-label-warning">{fieldErrors.email}</p>
+            <p class="label text-error">{fieldErrors.email}</p>
           {/if}
         </fieldset>
       </div>
@@ -212,7 +207,7 @@
               bind:value={password}
             />
             {#if fieldErrors.password}
-              <p class="label input-label-warning">{fieldErrors.password}</p>
+              <p class="label text-error">{fieldErrors.password}</p>
             {/if}
           </fieldset>
           <fieldset class="fieldset w-1/2">
@@ -226,7 +221,7 @@
               bind:value={confirmPassword}
             />
             {#if fieldErrors.confirmPassword}
-              <p class="label input-label-warning">
+              <p class="label text-error">
                 {fieldErrors.confirmPassword}
               </p>
             {/if}

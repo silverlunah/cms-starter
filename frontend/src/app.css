@@ -1,20 +1,6 @@
 @import "tailwindcss";
 @plugin "daisyui" {
-  themes: dark --default;
-}
-
-.fieldset-legend {
-  color: darkgrey;
-}
-
-.input {
-  color: whitesmoke;
-}
-
-.input-label {
-  color: dimgray;
-}
-
-.input-label-warning {
-  color: lightcoral;
+  themes:
+    emerald --default,
+    synthwave;
 }

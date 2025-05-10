@@ -6,7 +6,7 @@
 </svelte:head>
 
 <div
-  class="relative text-white flex flex-col items-center justify-end overflow-hidden p-4"
+  class="relative text-base-content flex flex-col items-center justify-end overflow-hidden p-4"
 >
   <div class="card w-auto md:w-3xl pixel-p p-4 text-center">
     Welcome to the dashboard!
