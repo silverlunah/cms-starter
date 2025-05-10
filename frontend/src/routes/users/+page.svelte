@@ -20,7 +20,7 @@
   /**-----------------------
    *    Event Listeners
    -----------------------*/
-  async function listenRefresh() {
+  async function listenRefreshUser() {
     selectedUser = null;
     users = await getUsers();
   }
@@ -86,6 +86,7 @@
                   selectedUser = user;
                 }}
               >
+                <!-- Status -->
                 <td class="text-center align-middle">
                   {#if !user.isActive}
                     <div
@@ -103,6 +104,8 @@
                     </div>
                   {/if}
                 </td>
+
+                <!-- Name -->
                 <td>
                   <div class="flex items-center gap-3">
                     <DefaultAvatar
@@ -119,9 +122,13 @@
                     </div>
                   </div>
                 </td>
+
+                <!-- Role -->
                 <td>
                   <TextBackgroundRole role={user.role} />
                 </td>
+
+                <!-- Created At -->
                 <td>
                   {#if user.createdAt === DATE.NOT_YET_UPDATED_INDICATOR}
                     <TextBackgroundDateAndTime
@@ -133,6 +140,8 @@
                     />
                   {/if}
                 </td>
+
+                <!-- Updated At -->
                 <td>
                   {#if user.updatedAt === DATE.NOT_YET_UPDATED_INDICATOR}
                     <TextBackgroundDateAndTime
@@ -151,6 +160,6 @@
       </div>
     </div>
   {/if}
-  <ModalCreateUser {listenRefresh} />
-  <ModalUpdateUser {selectedUser} {listenRefresh} />
+  <ModalCreateUser {listenRefreshUser} />
+  <ModalUpdateUser {selectedUser} {listenRefreshUser} />
 </div>

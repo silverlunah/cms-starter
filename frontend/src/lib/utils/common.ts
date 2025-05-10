@@ -17,7 +17,7 @@ export function closeModal(modalId: string) {
 
 export function getFirstAndLastNameInitials(
   firstName: string,
-  lastName: string
+  lastName: string,
 ): string {
   const firstInitial = firstName?.trim()?.[0] ?? "";
   const lastInitial = lastName?.trim()?.[0] ?? "";
@@ -34,7 +34,7 @@ export function formatUnixEpoch(date: string) {
 export function formatTimeAndDateUS(date: string) {
   return new Date(date).toLocaleString(
     DATE.FORMAT.DEFAULT.LOCALE,
-    DATE.FORMAT.DEFAULT.OPTIONS
+    DATE.FORMAT.DEFAULT.OPTIONS,
   );
 }
 

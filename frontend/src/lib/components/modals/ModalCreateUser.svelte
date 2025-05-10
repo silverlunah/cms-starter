@@ -11,9 +11,10 @@
   import ButtonAdd from "../buttons/ButtonAdd.svelte";
   import ButtonClose from "../buttons/ButtonClose.svelte";
   import DefaultAvatar from "../user/DefaultAvatar.svelte";
+  import { createUser } from "$lib/api";
 
   export let selectedUser: User | null = null;
-  export let listenRefresh: () => void;
+  export let listenRefreshUser: () => void;
 
   /**-----------------------
    *      Zod Schema
@@ -87,40 +88,14 @@
   /**-----------------------
    *   API Call Functions
    -----------------------*/
-  async function createNewUser() {
+  async function handleCreateUser() {
     if (!validateForm()) {
       errorMessage = "Please correct the highlighted fields.";
       return;
     }
 
     try {
-      const res = await fetch(PUBLIC_API_URL + "/create-user", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: email.toLowerCase(),
-          password,
-          firstName: toProperCase(firstName),
-          lastName: toProperCase(lastName),
-          role: role,
-        }),
-      });
-
-      if (!res.ok) {
-        let errorText;
-        try {
-          const data = await res.json();
-          errorText = data?.error || JSON.stringify(data);
-        } catch {
-          errorText = await res.text();
-        }
-        throw new Error(errorText || "Something went wrong");
-      }
-
-      const data = await res.json();
+      const data = await createUser(email, firstName, lastName, password, role);
       successMessage = data.message;
 
       closeModal("createUserModal");
@@ -159,7 +134,7 @@
       role = 0;
 
       // Refresh parent
-      listenRefresh();
+      listenRefreshUser();
     });
   });
 </script>
@@ -275,7 +250,7 @@
     </div>
 
     <div class="modal-action mt-4">
-      <ButtonAdd label="Create User" onclick={createNewUser} />
+      <ButtonAdd label="Create User" onclick={handleCreateUser} />
       <ButtonClose
         label="Close"
         onclick={() => closeModal("createUserModal")}

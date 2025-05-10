@@ -18,7 +18,7 @@
   import { deleteUser, toggleUserStatus, updateUser } from "$lib/api";
 
   export let selectedUser: User | null = null;
-  export let listenRefresh: () => void;
+  export let listenRefreshUser: () => void;
 
   let users: User[] = [];
   let confirmDeleteEmail = "";
@@ -156,7 +156,7 @@
     }
   }
 
-  async function disableSelectedUser() {
+  async function handleDisableUser() {
     if (!selectedUser) return;
 
     try {
@@ -174,10 +174,10 @@
       );
     }
 
-    listenRefresh();
+    listenRefreshUser();
   }
 
-  async function deleteSelectedUser() {
+  async function handleDeleteUser() {
     if (!selectedUser || confirmDeleteEmail !== selectedUser.email) return;
 
     try {
@@ -193,7 +193,7 @@
       );
     }
 
-    listenRefresh();
+    listenRefreshUser();
   }
 
   /**-----------------------
@@ -204,7 +204,7 @@
       .getElementById("updateUserModal")
       ?.addEventListener("close", () => {
         resetForm();
-        listenRefresh();
+        listenRefreshUser();
       });
   });
 </script>
@@ -414,19 +414,19 @@
 
       <dialog id="confirmDeleteUserModal" class="modal">
         <div class="modal-box max-w-96 max-h-3/4">
-          <div class="flex flex-col gap-6">
+          <div class="flex flex-col gap-4">
             <h3 class="font-bold text-lg text-center">Confirm Deletion</h3>
-            <p class="py-4 text-center">
+            <p class="text-center">
               Are you sure you want to delete <strong
                 >{selectedUser?.email}</strong
-              >? This action
+              >? <br /><br />This action
               <span class="text-red-500 font-semibold">cannot be undone</span>.
             </p>
             <div class="modal-action justify-center">
               <ButtonDelete
                 label="Yes, Delete"
                 onclick={() => {
-                  deleteSelectedUser();
+                  handleDeleteUser();
                   closeModal("confirmDeleteUserModal");
                 }}
               />
@@ -444,12 +444,12 @@
           <div class="flex flex-col gap-6">
             {#if !selectedUser.isActive}
               <h3 class="font-bold text-lg text-center">Confirm Enable</h3>
-              <p class="py-4 text-center">
+              <p class="text-center">
                 Let <strong>{selectedUser?.email}</strong> login their account?
               </p>
             {:else}
               <h3 class="font-bold text-lg text-center">Confirm Disable</h3>
-              <p class="py-4 text-center">
+              <p class="text-center">
                 <strong>{selectedUser?.email}</strong> will not be able to login.
                 Continue?
               </p>
@@ -459,7 +459,7 @@
               <ButtonAgree
                 label="Yes"
                 onclick={() => {
-                  disableSelectedUser();
+                  handleDisableUser();
                   closeModal("confirmUserStatusModal");
                 }}
               />

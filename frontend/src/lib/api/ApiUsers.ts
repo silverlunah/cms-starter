@@ -26,12 +26,48 @@ export async function getUsers(): Promise<User[]> {
         isActive: user.isActive,
         createdAt: new Date(user.createdAt).toLocaleString(),
         updatedAt: new Date(user.updatedAt).toLocaleString(),
-      }),
+      })
     )
     .sort(
       (a, b) =>
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
     );
+}
+
+export async function createUser(
+  email: string,
+  firstName: string,
+  lastName: string,
+  password: string,
+  role: number
+) {
+  const res = await fetch(PUBLIC_API_URL + "/create-user", {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email: email.toLowerCase(),
+      firstName: toProperCase(firstName),
+      lastName: toProperCase(lastName),
+      password,
+      role: role,
+    }),
+  });
+
+  if (!res.ok) {
+    let errorText;
+    try {
+      const data = await res.json();
+      errorText = data?.error || JSON.stringify(data);
+    } catch {
+      errorText = await res.text();
+    }
+    throw new Error(errorText || "Something went wrong");
+  }
+
+  return await res.json();
 }
 
 export async function updateUser(
@@ -40,7 +76,7 @@ export async function updateUser(
   firstName: string,
   lastName: string,
   password: string,
-  role: number,
+  role: number
 ) {
   const body = {
     email: email.toLowerCase(),

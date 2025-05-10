@@ -1,6 +1,35 @@
 import { PUBLIC_API_URL } from "$env/static/public";
 import type { AllowedHost, AllowedHostsResponse } from "$lib/types/allowedHost";
 
+export async function getAllowedHosts(): Promise<AllowedHost[]> {
+  const res = await fetch(PUBLIC_API_URL + "/allowed-hosts", {
+    method: "GET",
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    const message = await res.text();
+    throw new Error(message || "Failed to fetch allowed hosts");
+  }
+
+  const data: AllowedHostsResponse = await res.json();
+
+  return data.allowedHosts
+    .map(
+      (allowedHost: AllowedHost): AllowedHost => ({
+        id: allowedHost.id,
+        url: allowedHost.url,
+        displayName: allowedHost.displayName,
+        createdAt: new Date(allowedHost.createdAt).toLocaleString(),
+        updatedAt: new Date(allowedHost.updatedAt).toLocaleString(),
+      }),
+    )
+    .sort(
+      (a, b) =>
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+    );
+}
+
 export async function createAllowedHost(url: string, displayName: string) {
   const res = await fetch(`${PUBLIC_API_URL}/create-allowed-host`, {
     method: "POST",
@@ -49,31 +78,13 @@ export async function updateAllowedHost(
   };
 }
 
-export async function getAllowedHosts(): Promise<AllowedHost[]> {
-  const res = await fetch(PUBLIC_API_URL + "/allowed-hosts", {
-    method: "GET",
+export async function deleteAllowedHost(id: string) {
+  const res = await fetch(`${PUBLIC_API_URL}/allowed-host/${id}`, {
+    method: "DELETE",
     credentials: "include",
   });
 
-  if (!res.ok) {
-    const message = await res.text();
-    throw new Error(message || "Failed to fetch allowed hosts");
-  }
+  if (!res.ok) throw new Error("Failed to delete allowed host");
 
-  const data: AllowedHostsResponse = await res.json();
-
-  return data.allowedHosts
-    .map(
-      (allowedHost: AllowedHost): AllowedHost => ({
-        id: allowedHost.id,
-        url: allowedHost.url,
-        displayName: allowedHost.displayName,
-        createdAt: new Date(allowedHost.createdAt).toLocaleString(),
-        updatedAt: new Date(allowedHost.updatedAt).toLocaleString(),
-      }),
-    )
-    .sort(
-      (a, b) =>
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
-    );
+  return res.json();
 }
