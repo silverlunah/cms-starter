@@ -7,6 +7,7 @@
   import ButtonClose from "../../../lib/components/buttons/ButtonClose.svelte";
   import DefaultAvatar from "../../../lib/components/user/DefaultAvatar.svelte";
   import { createUser } from "$lib/api";
+  import { triggerNotification } from "$lib/utils/notification";
 
   export let selectedUser: User | null = null;
   export let listenRefreshUser: () => void;
@@ -93,10 +94,12 @@
       const data = await createUser(email, firstName, lastName, password, role);
       successMessage = data.message;
 
+      triggerNotification("Successfully deleted " + email, "success");
+
       closeModal("createUserModal");
-    } catch (error) {
-      errorMessage =
-        error instanceof Error ? error.message : "An unexpected error occurred";
+    } catch (err) {
+      fieldErrors["email"] =
+        err instanceof Error ? err.message : "An unexpected error occurred";
     }
   }
 

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { DATE } from "$lib/constants/common";
   import { onMount } from "svelte";
-  import type { User, RawUser, UsersResponse } from "$lib/types/user";
+  import type { User } from "$lib/types/user";
   import { formatTimeAndDateUS, triggerModal } from "$lib/utils/common";
   import ModalCreateUser from "./modals/ModalCreateUser.svelte";
   import ModalUpdateUser from "./modals/ModalUpdateUser.svelte";
@@ -12,11 +12,31 @@
   import TextBackgroundDateAndTime from "$lib/components/textbackgrounds/TextBackgroundDateAndTime.svelte";
   import TextBackgroundRole from "$lib/components/textbackgrounds/TextBackgroundRole.svelte";
   import SectionHeading from "$lib/components/sections/SectionHeading.svelte";
+  import ButtonPagination from "$lib/components/buttons/ButtonPagination.svelte";
 
   let users: User[] = [];
-  let error: string | null = null;
   let selectedUser: User | null = null;
-  let searchQuery = "";
+
+  let errorMessage: string | null = null;
+
+  /**-----------------------
+   *   Users Pagination
+   -----------------------*/
+  let currentPage = 1;
+  const usersPerPage = 10;
+
+  $: totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+
+  $: paginatedUsers = filteredUsers.slice(
+    (currentPage - 1) * usersPerPage,
+    currentPage * usersPerPage,
+  );
+
+  function goToPage(page: number) {
+    if (page >= 1 && page <= totalPages) {
+      currentPage = page;
+    }
+  }
 
   /**-----------------------
    *    Event Listeners
@@ -29,6 +49,8 @@
   /**-----------------------
    *  Reactive Statements
     -----------------------*/
+  let searchQuery = "";
+
   $: filteredUsers = users.filter((user) =>
     `${user.firstName} ${user.lastName} ${user.email}`
       .toLowerCase()
@@ -50,8 +72,8 @@
 <div
   class="relative text-base-content flex flex-col items-center justify-end p-4"
 >
-  {#if error}
-    <p class="text-red-500">{error}</p>
+  {#if errorMessage}
+    <p class="text-red-500">{errorMessage}</p>
   {:else if users.length === 0}
     <p>Loading users...</p>
   {:else}
@@ -86,7 +108,7 @@
             </tr>
           </thead>
           <tbody>
-            {#each filteredUsers as user}
+            {#each paginatedUsers as user}
               <tr
                 onclick={() => {
                   triggerModal("updateUserModal");
@@ -99,8 +121,10 @@
                     <div
                       class="inline-grid place-items-center *:[grid-area:1/1]"
                     >
-                      <div class="status status-error animate-ping"></div>
-                      <div class="status status-error"></div>
+                      <div
+                        class="status status-errorMessage animate-ping"
+                      ></div>
+                      <div class="status status-errorMessage"></div>
                     </div>
                   {:else}
                     <div
@@ -165,6 +189,7 @@
           </tbody>
         </table>
       </div>
+      <ButtonPagination {totalPages} {currentPage} {goToPage} />
     </div>
   {/if}
   <ModalCreateUser {listenRefreshUser} />

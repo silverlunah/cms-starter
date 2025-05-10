@@ -54,7 +54,7 @@
       class="input input-bordered w-full mb-4"
       on:keydown={handleKeyDown}
     />
-    <button type="submit" class="btn btn-primary w-full">Login</button>
+    <button type="submit" class="btn btn-secondary w-full">Login</button>
 
     {#if error}
       <p class="mt-4 text-error text-sm text-center">{error}</p>

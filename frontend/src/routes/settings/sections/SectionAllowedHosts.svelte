@@ -20,6 +20,8 @@
   import ButtonAdd from "$lib/components/buttons/ButtonAdd.svelte";
   import ButtonSave from "$lib/components/buttons/ButtonSave.svelte";
   import SectionHeading from "$lib/components/sections/SectionHeading.svelte";
+  import ButtonPagination from "$lib/components/buttons/ButtonPagination.svelte";
+  import { triggerNotification } from "$lib/utils/notification";
 
   let error: string | null = null;
   let allowedHosts: AllowedHost[] = [];
@@ -55,6 +57,25 @@
       .string()
       .url("URL is invalid. Make sure to include http:// or https://"),
   });
+
+  /**-----------------------
+   *   Users Pagination
+   -----------------------*/
+  let currentPage = 1;
+  const usersPerPage = 5;
+
+  $: totalPages = Math.ceil(allowedHosts.length / usersPerPage);
+
+  $: paginatedAllowedHosts = allowedHosts.slice(
+    (currentPage - 1) * usersPerPage,
+    currentPage * usersPerPage,
+  );
+
+  function goToPage(page: number) {
+    if (page >= 1 && page <= totalPages) {
+      currentPage = page;
+    }
+  }
 
   /**-----------------------
    *    Event Listeners
@@ -135,10 +156,13 @@
 
     try {
       const created = await createAllowedHost(createUrl, createDisplayName);
+      triggerNotification("Successfully created " + createUrl, "success");
       allowedHosts = [created, ...allowedHosts];
       editedValue = "";
     } catch (err) {
-      error = err instanceof Error ? err.message : "An unknown error occurred";
+      fieldErrors["createUrl"] =
+        err instanceof Error ? err.message : "An unknown error occurred";
+      return;
     }
 
     fieldErrors.url = "";
@@ -198,6 +222,8 @@
         updateUrl,
       );
 
+      triggerNotification("Successfully updated " + updateUrl, "success");
+
       allowedHosts = allowedHosts
         .map((h) => (h.id === updatedHost.id ? updatedHost : h))
         .filter((h): h is AllowedHost => h !== undefined);
@@ -219,6 +245,10 @@
 
     try {
       await deleteAllowedHost(selectedAllowedHost?.id);
+      triggerNotification(
+        "Successfully deleted " + selectedAllowedHost.url,
+        "success",
+      );
     } catch (err) {
       alert(
         err instanceof Error ? err.message : "An unexpected error occurred",
@@ -316,7 +346,7 @@
                 <td class="text-left"></td>
               </tr>
             {/if}
-            {#each allowedHosts as allowedHost}
+            {#each paginatedAllowedHosts as allowedHost}
               <tr
                 class={normalizeUrl(allowedHost.url) ===
                 normalizeUrl(window.location.origin)
@@ -458,6 +488,7 @@
           </tbody>
         </table>
       </div>
+      <ButtonPagination {totalPages} {currentPage} {goToPage} />
     </div>
   </div>
 {/if}

@@ -2,9 +2,7 @@
   import { z } from "zod";
   import type { User } from "$lib/types/user";
   import {
-    toProperCase,
     closeModal,
-    getFirstAndLastNameInitials,
     triggerModal,
     formatTimeAndDateUS,
   } from "$lib/utils/common";
@@ -14,7 +12,12 @@
   import ButtonDelete from "$lib/components/buttons/ButtonDelete.svelte";
   import ButtonAgree from "$lib/components/buttons/ButtonAgree.svelte";
   import DefaultAvatar from "$lib/components/user/DefaultAvatar.svelte";
+  import {
+    notificationMessage,
+    notificationType,
+  } from "$lib/stores/notification";
   import { deleteUser, toggleUserStatus, updateUser } from "$lib/api";
+  import { triggerNotification } from "$lib/utils/notification";
 
   export let selectedUser: User | null = null;
   export let listenRefreshUser: () => void;
@@ -136,10 +139,8 @@
       return;
     }
 
-    console.log(selectedUser);
-
     try {
-      const data = await updateUser(
+      await updateUser(
         selectedUser?.id ?? "",
         email,
         firstName,
@@ -147,11 +148,13 @@
         password,
         role,
       );
-      successMessage = data.message;
+
+      triggerNotification("Successfully edited " + email, "success");
+
       closeModal("updateUserModal");
-    } catch (error) {
-      errorMessage =
-        error instanceof Error ? error.message : "An unexpected error occurred";
+    } catch (err) {
+      fieldErrors["email"] =
+        err instanceof Error ? err.message : "An unexpected error occurred";
     }
   }
 
@@ -164,6 +167,17 @@
       if (selectedUser) {
         users = users.filter((u) => u.id !== selectedUser?.id);
       }
+
+      let statusInMessage = "disabled";
+      if (!selectedUser.isActive) {
+        statusInMessage = "enabled";
+      }
+
+      triggerNotification(
+        "Successfully " + statusInMessage + " " + selectedUser.email,
+        "success",
+      );
+
       selectedUser = null;
       confirmDeleteEmail = "";
       closeModal("updateUserModal");
@@ -183,6 +197,12 @@
       await deleteUser(selectedUser?.id);
 
       users = users.filter((u) => u.id !== selectedUser?.id);
+
+      triggerNotification(
+        "Successfully created " + selectedUser.email,
+        "success",
+      );
+
       selectedUser = null;
       confirmDeleteEmail = "";
       closeModal("updateUserModal");
@@ -366,7 +386,7 @@
               {:else}
                 <legend class="fieldset-legend">This user is active</legend>
                 <button
-                  class="btn btn-soft btn-primary w-full"
+                  class="btn btn-accent w-full"
                   onclick={() => triggerModal("confirmUserStatusModal")}
                   >Disable</button
                 >
