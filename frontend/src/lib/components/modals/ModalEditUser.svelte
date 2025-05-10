@@ -15,6 +15,7 @@
   import ButtonDelete from "../buttons/ButtonDelete.svelte";
   import ButtonAgree from "../buttons/ButtonAgree.svelte";
   import DefaultAvatar from "../user/DefaultAvatar.svelte";
+  import { deleteUser, toggleUserStatus, updateUser } from "$lib/api";
 
   export let selectedUser: User | null = null;
   export let listenRefresh: () => void;
@@ -130,39 +131,23 @@
   /**-----------------------
    *  API Call Functions
    -----------------------*/
-  async function updateUser() {
+  async function handleUpdateUser() {
     if (!validateForm()) {
       errorMessage = "Please correct the highlighted fields.";
       return;
     }
 
+    console.log(selectedUser)
+
     try {
-      const body = {
-        email: email.toLowerCase(),
-        firstName: toProperCase(firstName),
-        lastName: toProperCase(lastName),
+      const data = await updateUser(
+        selectedUser?.id ?? "",
+        email,
+        firstName,
+        lastName,
+        password,
         role,
-        ...(password ? { password } : {}), // include password only if non-empty
-      };
-
-      const res = await fetch(
-        `${PUBLIC_API_URL}/update-user/${selectedUser?.id}`,
-        {
-          method: "PUT",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(body),
-        },
       );
-
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => null);
-        throw new Error(errorData?.error || "Something went wrong");
-      }
-
-      const data = await res.json();
       successMessage = data.message;
       closeModal("updateUserModal");
     } catch (error) {
@@ -172,23 +157,10 @@
   }
 
   async function disableSelectedUser() {
-    console.log(selectedUser);
     if (!selectedUser) return;
 
     try {
-      const res = await fetch(`${PUBLIC_API_URL}/disable-user`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          id: selectedUser.id,
-          isActive: selectedUser.isActive,
-        }),
-      });
-
-      if (!res.ok) throw new Error("Failed to disable user");
+      await toggleUserStatus(selectedUser.id, selectedUser.isActive);
 
       if (selectedUser) {
         users = users.filter((u) => u.id !== selectedUser?.id);
@@ -209,12 +181,7 @@
     if (!selectedUser || confirmDeleteEmail !== selectedUser.email) return;
 
     try {
-      const res = await fetch(`${PUBLIC_API_URL}/users/${selectedUser.id}`, {
-        method: "DELETE",
-        credentials: "include"
-      });
-
-      if (!res.ok) throw new Error("Failed to delete user");
+      await deleteUser(selectedUser?.id);
 
       users = users.filter((u) => u.id !== selectedUser?.id);
       selectedUser = null;
@@ -434,7 +401,7 @@
         </div>
       </div>
       <div class="modal-action mt-4">
-        <ButtonSave label="Save" onclick={updateUser} disabled={!isDirty} />
+        <ButtonSave label="Save" onclick={handleUpdateUser} disabled={!isDirty} />
         <ButtonClose
           label="Close"
           onclick={() => closeModal("updateUserModal")}

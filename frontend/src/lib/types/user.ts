@@ -1,5 +1,3 @@
-// src/lib/types/user.ts
-
 // Keep RawUser for backend/internal use
 export type RawUser = User & {
   password: string;

@@ -1,18 +1,14 @@
 <script lang="ts">
-  import { PUBLIC_API_URL } from "$env/static/public";
   import { DATE } from "$lib/constants/common";
   import { onMount } from "svelte";
   import type { User, RawUser, UsersResponse } from "$lib/types/user";
-  import {
-    formatTimeAndDateUS,
-    getFirstAndLastNameInitials,
-    triggerModal,
-  } from "$lib/utils/common";
+  import { formatTimeAndDateUS, triggerModal } from "$lib/utils/common";
   import ModalCreateUser from "$lib/components/modals/ModalCreateUser.svelte";
   import ModalEditUser from "$lib/components/modals/ModalEditUser.svelte";
   import ButtonAdd from "$lib/components/buttons/ButtonAdd.svelte";
   import DefaultAvatar from "$lib/components/user/DefaultAvatar.svelte";
   import InputSearch from "$lib/components/inputs/InputSearch.svelte";
+  import { getUsers } from "$lib/api";
 
   let users: User[] = [];
   let error: string | null = null;
@@ -24,7 +20,7 @@
    -----------------------*/
   async function listenRefresh() {
     selectedUser = null;
-    getUsers();
+    users = await getUsers();
   }
 
   /**-----------------------
@@ -37,45 +33,10 @@
   );
 
   /**-----------------------
-   *  API Call Functions
-   -----------------------*/
-  async function getUsers() {
-    try {
-      const res = await fetch(PUBLIC_API_URL + "/users", {
-        method: "GET",
-        credentials: "include",
-      });
-      if (!res.ok) throw new Error("Failed to fetch users");
-
-      const data: UsersResponse = await res.json();
-
-      users = data.users
-        .map(
-          (user: User): User => ({
-            id: user.id,
-            email: user.email,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            role: user.role,
-            isActive: user.isActive,
-            createdAt: new Date(user.createdAt).toLocaleString(),
-            updatedAt: new Date(user.updatedAt).toLocaleString(),
-          }),
-        )
-        .sort(
-          (a, b) =>
-            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
-        );
-    } catch (err) {
-      error = err instanceof Error ? err.message : "An unknown error occurred";
-    }
-  }
-
-  /**-----------------------
-   *   onMount Functions
+   *  onMount Activities
    -----------------------*/
   onMount(async () => {
-    await getUsers();
+    users = await getUsers();
   });
 </script>
 
@@ -110,8 +71,8 @@
               <th>Status</th>
               <th>Name</th>
               <th>Role</th>
-              <th>Created At</th>
-              <th>Updated At</th>
+              <th>Date Created</th>
+              <th>Last Updated</th>
               <th></th>
             </tr>
           </thead>

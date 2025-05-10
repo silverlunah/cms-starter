@@ -32,6 +32,7 @@
     <ul class="menu menu-horizontal px-1">
       <li><a class="pixel-p text-md" href="/dashboard">Dashboard</a></li>
       <li><a class="pixel-p text-md" href="/users">Users</a></li>
+      <li><a class="pixel-p text-md" href="/settings">Settings</a></li>
     </ul>
   </div>
   <div class="navbar-end">
@@ -61,6 +62,7 @@
         >
           <li><a class="pixel-p text-md" href="/dashboard">Dashboard</a></li>
           <li><a class="pixel-p text-md" href="/users">Users</a></li>
+          <li><a class="pixel-p text-md" href="/settings">Settings</a></li>
           <li>
             <a
               href="#"
