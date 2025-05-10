@@ -26,11 +26,11 @@ export async function getUsers(): Promise<User[]> {
         isActive: user.isActive,
         createdAt: new Date(user.createdAt).toLocaleString(),
         updatedAt: new Date(user.updatedAt).toLocaleString(),
-      })
+      }),
     )
     .sort(
       (a, b) =>
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
     );
 }
 
@@ -39,7 +39,7 @@ export async function createUser(
   firstName: string,
   lastName: string,
   password: string,
-  role: number
+  role: number,
 ) {
   const res = await fetch(PUBLIC_API_URL + "/create-user", {
     method: "POST",
@@ -76,7 +76,7 @@ export async function updateUser(
   firstName: string,
   lastName: string,
   password: string,
-  role: number
+  role: number,
 ) {
   const body = {
     email: email.toLowerCase(),

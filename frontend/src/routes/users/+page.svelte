@@ -11,6 +11,7 @@
   import { getUsers } from "$lib/api";
   import TextBackgroundDateAndTime from "$lib/components/textbackgrounds/TextBackgroundDateAndTime.svelte";
   import TextBackgroundRole from "$lib/components/textbackgrounds/TextBackgroundRole.svelte";
+  import SectionHeading from "$lib/components/sections/SectionHeading.svelte";
 
   let users: User[] = [];
   let error: string | null = null;
@@ -53,6 +54,7 @@
     <p>Loading users...</p>
   {:else}
     <div class="card w-96 md:w-3xl pixel-p p-4 text-center">
+      <SectionHeading title="User Management" description="Manage your users in this page. Create, add, disable, and delete users. You can also change or assign roles."/>
       <div class="flex gap-4">
         <InputSearch
           placeholder="Search"
