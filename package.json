@@ -1,0 +1,18 @@
+{
+  "name": "cms-starter",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "init": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "docker:up": "npm run init && node scripts/generate-env.js && node scripts/docker-up.js",
+    "docker:down": "node scripts/docker-down.js",
+    "docker:restart": "npm run docker:down && npm run init && npm run docker:up",
+    "local:backend:up": "npm run local:generate:env && cd backend && npm install && npm run dev",
+    "local:frontend:up": "npm run local:generate:env && cd frontend && npm install && npm run dev",
+    "local:generate:env": "node scripts/generate-env.js"
+  },
+  "keywords": [],
+  "author": "silverlunah",
+  "license": "ISC",
+  "description": "Starter code for your website's content management system. Uses Fastify for backend and SvelteKit for frontend. Includes basic auth (JWT/cookies), CRUD for users table, and domain management to link your own website to the API."
+}
