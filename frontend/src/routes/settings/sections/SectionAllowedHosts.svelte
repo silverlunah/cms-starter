@@ -269,7 +269,7 @@
 {#if error}
   <p class="text-red-500">{error}</p>
 {:else if allowedHosts.length === 0}
-  <p>Loading users...</p>
+  <p>Loading Allowed Hosts Section...</p>
 {:else}
   <div class="card w-96 md:w-3xl pixel-p p-4 text-center">
     <div class="w-full flex flex-col">

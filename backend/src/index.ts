@@ -3,6 +3,7 @@ import fastifyCors from "@fastify/cors";
 import { allowedHostsRoutes, authRoutes, usersRoutes } from "./routes/index";
 import fastifyCookie from "@fastify/cookie";
 import fastifyJWT from "@fastify/jwt";
+import fastifyCsrfProtection from "@fastify/csrf-protection";
 import dotenv from "dotenv";
 import { getAllowedOrigins } from "./utils/dbUtils";
 
@@ -15,22 +16,22 @@ const fastify = Fastify();
  ------------------------*/
 let allowedOrigins: string[] = [];
 
-getAllowedOrigins().then((origins) => {
-  allowedOrigins = origins;
-});
+const setupCors = async () => {
+  allowedOrigins = await getAllowedOrigins();
 
-fastify.register(fastifyCors, {
-  origin: (origin, cb) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      cb(null, true);
-    } else {
-      cb(new Error("Not allowed by CORS"), false);
-    }
-  },
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true,
-});
+  fastify.register(fastifyCors, {
+    origin: (origin, cb) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        cb(null, true);
+      } else {
+        cb(new Error("Not allowed by CORS"), false);
+      }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  });
+};
 
 /**-----------------------
  *  Routes configuration  
@@ -56,12 +57,18 @@ fastify.register(fastifyJWT, {
   },
 });
 
+fastify.register(fastifyCsrfProtection);
+
 /**-----------------------
  *     Server Startup 
  *     configuration  
  ------------------------*/
 const start = async () => {
   try {
+    // Wait for CORS setup to complete before starting the server
+    await setupCors();
+
+    // Now start the server
     await fastify.listen({ port: 3001, host: "0.0.0.0" });
     console.log("Server is running on http://localhost:3001");
   } catch (err) {

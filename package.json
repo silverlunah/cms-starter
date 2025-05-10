@@ -14,5 +14,8 @@
   "keywords": [],
   "author": "silverlunah",
   "license": "ISC",
-  "description": "Starter code for your website's content management system. Uses Fastify for backend and SvelteKit for frontend. Includes basic auth (JWT/cookies), CRUD for users table, and domain management to link your own website to the API."
+  "description": "Starter code for your website's content management system. Uses Fastify for backend and SvelteKit for frontend. Includes basic auth (JWT/cookies), CRUD for users table, and domain management to link your own website to the API.",
+  "dependencies": {
+    "@fastify/csrf-protection": "^7.1.0"
+  }
 }
