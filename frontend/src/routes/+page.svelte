@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { PUBLIC_API_URL } from "$env/static/public";
+  import ToggleTheme from "$lib/components/toggles/ToggleTheme.svelte";
   import { isLoggedIn } from "$lib/stores/auth";
 
   let email = "";
@@ -33,27 +34,33 @@
 
 <form
   on:submit|preventDefault={handleLogin}
-  class="max-w-sm mx-auto mt-10 p-6 bg-base-100 shadow-xl rounded-box"
+  class="max-w-sm mx-auto relative flex flex-col items-center p-4 gap-4"
 >
-  <h1 class="text-2xl font-bold mb-4 text-center">Login</h1>
-  <input
-    type="email"
-    bind:value={email}
-    placeholder="Email"
-    required
-    class="input input-bordered w-full mb-4"
-  />
-  <input
-    type="password"
-    bind:value={password}
-    placeholder="Password"
-    required
-    class="input input-bordered w-full mb-4"
-    on:keydown={handleKeyDown}
-  />
-  <button type="submit" class="btn btn-primary w-full">Login</button>
+  <h1 class="text-2xl font-bold text-center">Login</h1>
 
-  {#if error}
-    <p class="mt-4 text-error text-sm text-center">{error}</p>
-  {/if}
+  <div class="items-center">
+    <input
+      type="email"
+      bind:value={email}
+      placeholder="Email"
+      required
+      class="input input-bordered w-full mb-4"
+    />
+    <input
+      type="password"
+      bind:value={password}
+      placeholder="Password"
+      required
+      class="input input-bordered w-full mb-4"
+      on:keydown={handleKeyDown}
+    />
+    <button type="submit" class="btn btn-primary w-full">Login</button>
+
+    {#if error}
+      <p class="mt-4 text-error text-sm text-center">{error}</p>
+    {/if}
+  </div>
+  <div class="w-full flex justify-end">
+    <ToggleTheme />
+  </div>
 </form>

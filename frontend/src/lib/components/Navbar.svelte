@@ -1,7 +1,6 @@
 <script>
   import ButtonLogout from "./buttons/ButtonLogout.svelte";
   import ToggleTheme from "./toggles/ToggleTheme.svelte";
-
 </script>
 <div class="navbar bg-base-100 shadow-sm sticky top-0 z-50 w-auto">
   <div class="navbar-start">
