@@ -10,7 +10,7 @@ generator client {
   seed     = "ts-node prisma/seed.ts"
 }
 
-model User {
+model user {
   id          Int       @id @default(autoincrement())
   email       String    @unique
   password    String
@@ -22,7 +22,7 @@ model User {
   updatedAt   DateTime? @updatedAt
 }
 
-model AllowedHosts {
+model allowed_hosts {
   id          Int       @id @default(autoincrement())
   url         String    @unique
   displayName String

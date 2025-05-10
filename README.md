@@ -46,4 +46,4 @@ npx prisma migrate dev --name migration-name
 
 ## Do Not Forget
 
-1. Add your main website's URL to AllowedHosts db
+1. Add your main website's URL to allowed_hosts db

@@ -119,7 +119,7 @@
             {#each filteredUsers as user}
               <tr
                 onclick={() => {
-                  triggerModal("editUserModal");
+                  triggerModal("updateUserModal");
                   selectedUser = user;
                 }}
               >

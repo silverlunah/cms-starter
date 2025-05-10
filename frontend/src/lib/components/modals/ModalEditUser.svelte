@@ -130,7 +130,7 @@
   /**-----------------------
    *  API Call Functions
    -----------------------*/
-  async function editUser() {
+  async function updateUser() {
     if (!validateForm()) {
       errorMessage = "Please correct the highlighted fields.";
       return;
@@ -146,7 +146,7 @@
       };
 
       const res = await fetch(
-        `${PUBLIC_API_URL}/edit-user/${selectedUser?.id}`,
+        `${PUBLIC_API_URL}/update-user/${selectedUser?.id}`,
         {
           method: "PUT",
           credentials: "include",
@@ -164,7 +164,7 @@
 
       const data = await res.json();
       successMessage = data.message;
-      closeModal("editUserModal");
+      closeModal("updateUserModal");
     } catch (error) {
       errorMessage =
         error instanceof Error ? error.message : "An unexpected error occurred";
@@ -188,14 +188,14 @@
         }),
       });
 
-      if (!res.ok) throw new Error("Failed to delete user");
+      if (!res.ok) throw new Error("Failed to disable user");
 
       if (selectedUser) {
         users = users.filter((u) => u.id !== selectedUser?.id);
       }
       selectedUser = null;
       confirmDeleteEmail = "";
-      closeModal("editUserModal");
+      closeModal("updateUserModal");
     } catch (err) {
       alert(
         err instanceof Error ? err.message : "An unexpected error occurred",
@@ -209,23 +209,17 @@
     if (!selectedUser || confirmDeleteEmail !== selectedUser.email) return;
 
     try {
-      const res = await fetch(`${PUBLIC_API_URL}/delete-user`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ id: selectedUser.id }),
+      const res = await fetch(`${PUBLIC_API_URL}/users/${selectedUser.id}`, {
+        method: "DELETE",
+        credentials: "include"
       });
 
       if (!res.ok) throw new Error("Failed to delete user");
 
-      if (selectedUser) {
-        users = users.filter((u) => u.id !== selectedUser?.id);
-      }
+      users = users.filter((u) => u.id !== selectedUser?.id);
       selectedUser = null;
       confirmDeleteEmail = "";
-      closeModal("editUserModal");
+      closeModal("updateUserModal");
     } catch (err) {
       alert(
         err instanceof Error ? err.message : "An unexpected error occurred",
@@ -239,14 +233,16 @@
    *  onMount activities
    -----------------------*/
   onMount(() => {
-    document.getElementById("editUserModal")?.addEventListener("close", () => {
-      resetForm();
-      listenRefresh();
-    });
+    document
+      .getElementById("updateUserModal")
+      ?.addEventListener("close", () => {
+        resetForm();
+        listenRefresh();
+      });
   });
 </script>
 
-<dialog id="editUserModal" class="modal">
+<dialog id="updateUserModal" class="modal">
   <div class="modal-box max-w-lg max-h-3/4">
     {#if selectedUser}
       <div class="flex flex-col gap-6">
@@ -438,10 +434,10 @@
         </div>
       </div>
       <div class="modal-action mt-4">
-        <ButtonSave label="Save" onclick={editUser} disabled={!isDirty} />
+        <ButtonSave label="Save" onclick={updateUser} disabled={!isDirty} />
         <ButtonClose
           label="Close"
-          onclick={() => closeModal("editUserModal")}
+          onclick={() => closeModal("updateUserModal")}
         />
       </div>
 

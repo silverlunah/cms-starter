@@ -3,10 +3,10 @@ import { verifyJWT } from "../plugins/protect";
 import {
   createUser,
   deleteUser,
-  editUser,
+  updateUser,
   getAllUsers,
   toggleUserStatus,
-} from "../services/usersService";
+} from "../services/index";
 
 export async function usersRoutes(fastify: FastifyInstance) {
   fastify.get("/me", { preHandler: [verifyJWT] }, async (req, reply) => {
@@ -24,7 +24,7 @@ export async function usersRoutes(fastify: FastifyInstance) {
   });
 
   fastify.post(
-    "/add-user",
+    "/create-user",
     {
       preHandler: [verifyJWT],
       schema: {
@@ -73,7 +73,7 @@ export async function usersRoutes(fastify: FastifyInstance) {
   );
 
   fastify.put(
-    "/edit-user/:id",
+    "/update-user/:id",
     {
       preHandler: [verifyJWT],
       schema: {
@@ -109,7 +109,7 @@ export async function usersRoutes(fastify: FastifyInstance) {
       };
 
       try {
-        const updatedUser = await editUser(Number(id), {
+        const updatedUser = await updateUser(Number(id), {
           email,
           password,
           firstName,
@@ -159,15 +159,18 @@ export async function usersRoutes(fastify: FastifyInstance) {
     }
   );
 
-  fastify.post(
-    "/delete-user",
+  fastify.delete(
+    "/users/:id",
     { preHandler: [verifyJWT] },
     async (request, reply) => {
-      const { id } = request.body as { id: number };
+      const { id } = request.params as { id: string };
 
       try {
-        const deletedUser = await deleteUser(id);
-        reply.send({ message: "User deleted successfully", user: deletedUser });
+        const deletedUser = await deleteUser(Number(id)); // or UUID if needed
+        reply.send({
+          message: "User deleted successfully",
+          user: deletedUser,
+        });
       } catch (error: unknown) {
         if (
           error instanceof Error &&

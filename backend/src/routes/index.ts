@@ -1,3 +1,5 @@
 import { authRoutes } from "./auth";
 import { usersRoutes } from "./users";
-export { authRoutes, usersRoutes };
+import { allowedHostsRoutes } from "./allowedHosts";
+
+export { authRoutes, usersRoutes, allowedHostsRoutes };

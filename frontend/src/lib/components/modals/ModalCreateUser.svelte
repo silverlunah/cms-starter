@@ -94,7 +94,7 @@
     }
 
     try {
-      const res = await fetch(PUBLIC_API_URL + "/add-user", {
+      const res = await fetch(PUBLIC_API_URL + "/create-user", {
         method: "POST",
         credentials: "include",
         headers: {

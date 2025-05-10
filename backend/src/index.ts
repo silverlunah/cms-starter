@@ -1,6 +1,6 @@
 import Fastify from "fastify";
 import fastifyCors from "@fastify/cors";
-import { authRoutes, usersRoutes } from "./routes/index";
+import { allowedHostsRoutes, authRoutes, usersRoutes } from "./routes/index";
 import fastifyCookie from "@fastify/cookie";
 import fastifyJWT from "@fastify/jwt";
 import dotenv from "dotenv";
@@ -35,7 +35,9 @@ fastify.register(fastifyCors, {
 /**-----------------------
  *  Routes configuration  
  ------------------------*/
-fastify.register(authRoutes, usersRoutes);
+fastify.register(authRoutes);
+fastify.register(usersRoutes);
+fastify.register(allowedHostsRoutes);
 
 /**-----------------------
  *    JWT configuration  

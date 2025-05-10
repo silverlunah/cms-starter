@@ -9,7 +9,7 @@ export async function seedAllowedHosts() {
     return;
   }
 
-  await prisma.allowedHosts.upsert({
+  await prisma.allowed_hosts.upsert({
     where: { url: host },
     update: {
       url: host,

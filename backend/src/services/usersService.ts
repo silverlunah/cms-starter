@@ -47,7 +47,7 @@ export async function createUser(
   return newUser;
 }
 
-export async function editUser(
+export async function updateUser(
   id: number,
   data: {
     email: string;
