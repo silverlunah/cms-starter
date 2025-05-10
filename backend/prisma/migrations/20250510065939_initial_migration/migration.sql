@@ -1,9 +1,3 @@
--- DropTable
-DROP TABLE `AllowedHosts`;
-
--- DropTable
-DROP TABLE `User`;
-
 -- CreateTable
 CREATE TABLE `user` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,

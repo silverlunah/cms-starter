@@ -9,6 +9,7 @@ export async function getAllAllowedHosts() {
       id: true,
       url: true,
       displayName: true,
+      createdAt: true,
       updatedAt: true,
     },
   });
