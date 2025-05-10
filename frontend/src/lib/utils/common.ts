@@ -17,7 +17,7 @@ export function closeModal(modalId: string) {
 
 export function getFirstAndLastNameInitials(
   firstName: string,
-  lastName: string,
+  lastName: string
 ): string {
   const firstInitial = firstName?.trim()?.[0] ?? "";
   const lastInitial = lastName?.trim()?.[0] ?? "";
@@ -34,13 +34,22 @@ export function formatUnixEpoch(date: string) {
 export function formatTimeAndDateUS(date: string) {
   return new Date(date).toLocaleString(
     DATE.FORMAT.DEFAULT.LOCALE,
-    DATE.FORMAT.DEFAULT.OPTIONS,
+    DATE.FORMAT.DEFAULT.OPTIONS
   );
 }
 
 export function toProperCase(str: string): string {
   return str
     .split(" ") // Split by space
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize first letter of each word
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
     .join(" "); // Join the words back together with spaces
+}
+
+export function normalizeUrl(url: string): string {
+  try {
+    const parsed = new URL(url.includes("://") ? url : `https://${url}`);
+    return parsed.origin.toLowerCase();
+  } catch {
+    return url.trim().toLowerCase();
+  }
 }

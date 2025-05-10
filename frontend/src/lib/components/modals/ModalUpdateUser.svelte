@@ -137,7 +137,7 @@
       return;
     }
 
-    console.log(selectedUser)
+    console.log(selectedUser);
 
     try {
       const data = await updateUser(
@@ -401,7 +401,11 @@
         </div>
       </div>
       <div class="modal-action mt-4">
-        <ButtonSave label="Save" onclick={handleUpdateUser} disabled={!isDirty} />
+        <ButtonSave
+          label="Save"
+          onclick={handleUpdateUser}
+          disabled={!isDirty}
+        />
         <ButtonClose
           label="Close"
           onclick={() => closeModal("updateUserModal")}

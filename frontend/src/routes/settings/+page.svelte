@@ -1,10 +1,11 @@
 <script lang="ts">
   import ButtonDelete from "$lib/components/buttons/ButtonDelete.svelte";
   import type { AllowedHost } from "$lib/types/allowedHost";
-  import { formatTimeAndDateUS } from "$lib/utils/common";
+  import { formatTimeAndDateUS, normalizeUrl } from "$lib/utils/common";
   import { onMount } from "svelte";
   import { updateAllowedHost } from "$lib/api";
   import { getAllowedHosts } from "$lib/api/ApiAllowedHosts";
+  import TextBackgroundDateAndTime from "$lib/components/textbackgrounds/TextBackgroundDateAndTime.svelte";
 
   let error: string | null = null;
   let allowedHosts: AllowedHost[] = [];
@@ -35,19 +36,33 @@
     field: "displayName" | "url",
   ) {
     if (e instanceof KeyboardEvent && e.key !== "Enter") return;
-    submitEdit(id, field);
+    submitUpdate(id, field);
   }
 
   /**-----------------------
    *  API Call Functions
    -----------------------*/
-  async function submitEdit(id: number, field: "displayName" | "url") {
+
+  async function submitUpdate(id: number, field: "displayName" | "url") {
     const host = allowedHosts.find((h) => Number(h.id) === id);
     if (!host) return;
 
     const newDisplayName =
-      field === "displayName" ? editedValue : host.displayName;
-    const newUrl = field === "url" ? editedValue : host.url;
+      field === "displayName" ? editedValue.trim() : host.displayName.trim();
+    const newUrl = field === "url" ? editedValue.trim() : host.url.trim();
+
+    const isUnchanged =
+      (field === "displayName" && newDisplayName === host.displayName.trim()) ||
+      (field === "url" && normalizeUrl(newUrl) === normalizeUrl(host.url));
+
+    if (isUnchanged) {
+      if (field === "displayName") {
+        editingDisplayNameId = null;
+      } else {
+        editingUrlId = null;
+      }
+      return;
+    }
 
     try {
       const updatedHost = await updateAllowedHost(id, newDisplayName, newUrl);
@@ -79,6 +94,9 @@
 </svelte:head>
 
 <div class="relative text-white flex flex-col items-center justify-end p-4">
+  <h1 class="text-2xl">Settings</h1>
+  <div class="divider"></div>
+
   {#if error}
     <p class="text-red-500">{error}</p>
   {:else if allowedHosts.length === 0}
@@ -98,20 +116,26 @@
           </thead>
           <tbody>
             {#each allowedHosts as allowedHost}
-              <tr>
+              <!-- Calculate isSelf before the row rendering -->
+              <tr
+                class={normalizeUrl(allowedHost.url) ===
+                normalizeUrl(window.location.origin)
+                  ? "opacity-50 pointer-events-none"
+                  : ""}
+              >
                 <!-- Display Name -->
                 <td class="text-left">
-                  {#if editingDisplayNameId === Number(allowedHost.id)}
+                  {#if editingDisplayNameId === Number(allowedHost.id) && normalizeUrl(allowedHost.url) !== normalizeUrl(window.location.origin)}
                     <input
                       bind:value={editedValue}
-                      class="text-white p-1 w-full rounded"
-                      onblur={(e) =>
+                      class="input text-white min-w-44"
+                      on:blur={(e) =>
                         handleKeyOrBlur(
                           e,
                           Number(allowedHost.id),
                           "displayName",
                         )}
-                      onkeydown={(e) =>
+                      on:keydown={(e) =>
                         handleKeyOrBlur(
                           e,
                           Number(allowedHost.id),
@@ -122,49 +146,61 @@
                   {:else}
                     <!-- svelte-ignore a11y_click_events_have_key_events -->
                     <!-- svelte-ignore a11y_no_static_element_interactions -->
-                    <!-- svelte-ignore a11y_no_static_element_interactions -->
                     <!-- svelte-ignore a11y_missing_attribute -->
                     <a
-                      class="flex items-center justify-between gap-2 text-blue-500 cursor-pointer"
-                      onclick={() =>
-                        startEditing(
-                          Number(allowedHost.id),
-                          allowedHost.displayName,
-                          "displayName",
-                        )}
+                      class="flex items-center justify-between gap-2 text-blue-500 {normalizeUrl(
+                        allowedHost.url,
+                      ) === normalizeUrl(window.location.origin)
+                        ? 'cursor-not-allowed text-gray-400'
+                        : 'cursor-pointer'}"
+                      on:click={normalizeUrl(allowedHost.url) !==
+                      normalizeUrl(window.location.origin)
+                        ? () =>
+                            startEditing(
+                              Number(allowedHost.id),
+                              allowedHost.displayName,
+                              "displayName",
+                            )
+                        : null}
                     >
-                      <p>{allowedHost.displayName}</p>
+                      <p class="whitespace-nowrap">{allowedHost.displayName}</p>
                     </a>
                   {/if}
                 </td>
 
                 <!-- URL -->
                 <td class="text-left">
-                  {#if editingUrlId === Number(allowedHost.id)}
+                  {#if editingUrlId === Number(allowedHost.id) && normalizeUrl(allowedHost.url) !== normalizeUrl(window.location.origin)}
                     <input
                       bind:value={editedValue}
-                      class="text-white p-1 w-full rounded"
-                      onblur={(e) =>
+                      class="input text-white min-w-44"
+                      on:blur={(e) =>
                         handleKeyOrBlur(e, Number(allowedHost.id), "url")}
-                      onkeydown={(e) =>
+                      on:keydown={(e) =>
                         handleKeyOrBlur(e, Number(allowedHost.id), "url")}
                       autofocus
                     />
                   {:else}
                     <!-- svelte-ignore a11y_click_events_have_key_events -->
                     <!-- svelte-ignore a11y_no_static_element_interactions -->
-                    <!-- svelte-ignore a11y_no_static_element_interactions -->
                     <!-- svelte-ignore a11y_missing_attribute -->
                     <a
-                      class="flex items-center justify-between gap-2 text-blue-500 cursor-pointer"
-                      onclick={() =>
-                        startEditing(
-                          Number(allowedHost.id),
-                          allowedHost.url,
-                          "url",
-                        )}
+                      class="flex items-center justify-between gap-2 text-blue-500 {normalizeUrl(
+                        allowedHost.url,
+                      ) === normalizeUrl(window.location.origin)
+                        ? 'cursor-not-allowed text-gray-400'
+                        : 'cursor-pointer'}"
+                      on:click={normalizeUrl(allowedHost.url) !==
+                      normalizeUrl(window.location.origin)
+                        ? () =>
+                            startEditing(
+                              Number(allowedHost.id),
+                              allowedHost.url,
+                              "url",
+                            )
+                        : null}
                     >
-                      <p>{allowedHost.url}</p>
+                      <p class="whitespace-nowrap">{allowedHost.url}</p>
                     </a>
                   {/if}
                 </td>
@@ -173,19 +209,31 @@
                 <td class="text-left">
                   <ButtonDelete
                     label=""
-                    additionalClass=""
-                    onclick={() => alert("test")}
+                    additionalClass={normalizeUrl(allowedHost.url) ===
+                    normalizeUrl(window.location.origin)
+                      ? "btn-disabled"
+                      : ""}
+                    disabled={normalizeUrl(allowedHost.url) ===
+                      normalizeUrl(window.location.origin)}
+                    onclick={() =>
+                      normalizeUrl(allowedHost.url) !==
+                        normalizeUrl(window.location.origin) &&
+                      alert("test")}
                   />
                 </td>
 
                 <!-- Created At -->
                 <td class="text-left">
-                  {formatTimeAndDateUS(allowedHost.createdAt)}
+                  <TextBackgroundDateAndTime
+                    label={formatTimeAndDateUS(allowedHost.createdAt)}
+                  />
                 </td>
 
                 <!-- Updated At -->
                 <td class="text-left">
-                  {formatTimeAndDateUS(allowedHost.updatedAt)}
+                  <TextBackgroundDateAndTime
+                    label={formatTimeAndDateUS(allowedHost.updatedAt)}
+                  />
                 </td>
               </tr>
             {/each}

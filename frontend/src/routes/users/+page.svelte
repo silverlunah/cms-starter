@@ -4,11 +4,13 @@
   import type { User, RawUser, UsersResponse } from "$lib/types/user";
   import { formatTimeAndDateUS, triggerModal } from "$lib/utils/common";
   import ModalCreateUser from "$lib/components/modals/ModalCreateUser.svelte";
-  import ModalEditUser from "$lib/components/modals/ModalEditUser.svelte";
+  import ModalUpdateUser from "$lib/components/modals/ModalUpdateUser.svelte";
   import ButtonAdd from "$lib/components/buttons/ButtonAdd.svelte";
   import DefaultAvatar from "$lib/components/user/DefaultAvatar.svelte";
   import InputSearch from "$lib/components/inputs/InputSearch.svelte";
   import { getUsers } from "$lib/api";
+  import TextBackgroundDateAndTime from "$lib/components/textbackgrounds/TextBackgroundDateAndTime.svelte";
+  import TextBackgroundRole from "$lib/components/textbackgrounds/TextBackgroundRole.svelte";
 
   let users: User[] = [];
   let error: string | null = null;
@@ -118,18 +120,28 @@
                   </div>
                 </td>
                 <td>
-                  {#if user.role === 0}
-                    <span class="badge badge-secondary badge-sm">Admin</span>
+                  <TextBackgroundRole role={user.role} />
+                </td>
+                <td>
+                  {#if user.createdAt === DATE.NOT_YET_UPDATED_INDICATOR}
+                    <TextBackgroundDateAndTime
+                      label={DATE.NOT_YET_UPDATED_STRING}
+                    />
                   {:else}
-                    <span class="badge badge-primary badge-sm">User</span>
+                    <TextBackgroundDateAndTime
+                      label={formatTimeAndDateUS(user.createdAt)}
+                    />
                   {/if}
                 </td>
-                <td>{formatTimeAndDateUS(user.createdAt)}</td>
                 <td>
                   {#if user.updatedAt === DATE.NOT_YET_UPDATED_INDICATOR}
-                    {DATE.NOT_YET_UPDATED_STRING}
+                    <TextBackgroundDateAndTime
+                      label={DATE.NOT_YET_UPDATED_STRING}
+                    />
                   {:else}
-                    {formatTimeAndDateUS(user.updatedAt)}
+                    <TextBackgroundDateAndTime
+                      label={formatTimeAndDateUS(user.updatedAt)}
+                    />
                   {/if}
                 </td>
               </tr>
@@ -140,5 +152,5 @@
     </div>
   {/if}
   <ModalCreateUser {listenRefresh} />
-  <ModalEditUser {selectedUser} {listenRefresh} />
+  <ModalUpdateUser {selectedUser} {listenRefresh} />
 </div>
