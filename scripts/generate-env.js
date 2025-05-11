@@ -15,7 +15,7 @@ JWT_SECRET="secret"
 FRONTEND_URL="http://localhost:3002"
 
 # Database Environment Variables
-DATABASE_URL="mysql://root:root@mysql:3306/silverlunah"
+DATABASE_URL="mysql://root:root@localhost:3306/silverlunah"
 `
   );
   console.log(`✅  Created backend/.env`);
