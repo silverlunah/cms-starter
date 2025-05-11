@@ -11,8 +11,9 @@
   import { getUsers } from "$lib/api";
   import TextBackgroundDateAndTime from "$lib/components/textbackgrounds/TextBackgroundDateAndTime.svelte";
   import TextBackgroundRole from "$lib/components/textbackgrounds/TextBackgroundRole.svelte";
-  import SectionHeading from "$lib/components/sections/SectionHeading.svelte";
+  import SectionHeading from "$lib/components/pages/SectionHeading.svelte";
   import ButtonPagination from "$lib/components/buttons/ButtonPagination.svelte";
+  import PageWrapper from "$lib/components/pages/PageWrapper.svelte";
 
   let users: User[] = [];
   let selectedUser: User | null = null;
@@ -69,9 +70,7 @@
   <title>Users</title>
 </svelte:head>
 
-<div
-  class="relative text-base-content flex flex-col items-center justify-end p-4"
->
+<PageWrapper>
   {#if errorMessage}
     <p class="text-red-500">{errorMessage}</p>
   {:else if users.length === 0}
@@ -194,4 +193,4 @@
   {/if}
   <ModalCreateUser {listenRefreshUser} />
   <ModalUpdateUser {selectedUser} {listenRefreshUser} />
-</div>
+</PageWrapper>

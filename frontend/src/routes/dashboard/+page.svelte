@@ -1,17 +1,12 @@
 <script lang="ts">
+  import PageWrapper from "$lib/components/pages/PageWrapper.svelte";
+
 </script>
 
 <svelte:head>
   <title>Dashboard</title>
 </svelte:head>
 
-<div
-  class="relative text-base-content flex flex-col items-center justify-end overflow-hidden p-4"
->
-  <div class="card w-auto md:w-3xl pixel-p p-4 text-center">
+<PageWrapper>
     Welcome to the dashboard!
-  </div>
-</div>
-
-<style>
-</style>
+</PageWrapper>

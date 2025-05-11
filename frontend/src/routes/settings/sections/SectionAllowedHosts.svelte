@@ -19,7 +19,7 @@
   import ButtonClose from "$lib/components/buttons/ButtonClose.svelte";
   import ButtonAdd from "$lib/components/buttons/ButtonAdd.svelte";
   import ButtonSave from "$lib/components/buttons/ButtonSave.svelte";
-  import SectionHeading from "$lib/components/sections/SectionHeading.svelte";
+  import SectionHeading from "$lib/components/pages/SectionHeading.svelte";
   import ButtonPagination from "$lib/components/buttons/ButtonPagination.svelte";
   import { triggerNotification } from "$lib/utils/notification";
 
