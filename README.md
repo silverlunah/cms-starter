@@ -60,3 +60,12 @@ On first login, you can use:
 
 - Email: admin@admin.com
 - Password: test
+
+## Production
+
+- Remove mysql port in your production docker-compose.yml, this is so that your db is only accessible in your docker network
+
+```bash
+ports:
+      - "3006:3006"
+```
