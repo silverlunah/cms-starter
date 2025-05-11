@@ -12,15 +12,17 @@ echo "MySQL is up — running prisma generate..."
 # Generate Prisma client (ensure the client is generated before seeding)
 npx prisma generate
 
-echo "Prisma generate complete. Running seeders and migrations..."
-
-# Run database seeding (if needed)
-npx prisma db seed || echo "No seed data to run."
+echo "Prisma generate complete. Running migrations..."
 
 # Run migrations
 npx prisma migrate deploy
 
-echo "Migrations complete. Building the app..."
+echo "Migrations complete. Running seeders..."
+
+# Run database seeding
+npx prisma db seed || echo "No seed data to run."
+
+echo "Seeding complete. Building the app..."
 
 # Build the backend
 npm run build
