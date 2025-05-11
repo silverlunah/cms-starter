@@ -80,7 +80,7 @@ export async function usersRoutes(fastify: FastifyInstance) {
         params: {
           type: "object",
           properties: {
-            id: { type: "number" },
+            id: { type: "string" },
           },
           required: ["id"],
         },
@@ -109,7 +109,7 @@ export async function usersRoutes(fastify: FastifyInstance) {
       };
 
       try {
-        const updatedUser = await updateUser(Number(id), {
+        const updatedUser = await updateUser(id, {
           email,
           password,
           firstName,
@@ -133,7 +133,7 @@ export async function usersRoutes(fastify: FastifyInstance) {
     { preHandler: [verifyJWT] },
     async (request, reply) => {
       const { id, isActive } = request.body as {
-        id: number;
+        id: string;
         isActive: boolean;
       };
 
@@ -166,7 +166,7 @@ export async function usersRoutes(fastify: FastifyInstance) {
       const { id } = request.params as { id: string };
 
       try {
-        const deletedUser = await deleteUser(Number(id)); // or UUID if needed
+        const deletedUser = await deleteUser(id); // or UUID if needed
         reply.send({
           message: "User deleted successfully",
           user: deletedUser,

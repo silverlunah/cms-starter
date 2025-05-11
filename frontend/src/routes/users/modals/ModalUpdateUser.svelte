@@ -386,7 +386,7 @@
               {:else}
                 <legend class="fieldset-legend">This user is active</legend>
                 <button
-                  class="btn btn-accent w-full"
+                  class="btn btn-error w-full"
                   onclick={() => triggerModal("confirmUserStatusModal")}
                   >Disable</button
                 >

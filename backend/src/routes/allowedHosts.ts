@@ -68,7 +68,7 @@ export async function allowedHostsRoutes(fastify: FastifyInstance) {
         params: {
           type: "object",
           properties: {
-            id: { type: "number" },
+            id: { type: "string" },
           },
           required: ["id"],
         },
@@ -91,7 +91,7 @@ export async function allowedHostsRoutes(fastify: FastifyInstance) {
       };
 
       try {
-        const updatedAllowedHost = await updateAllowedHost(Number(id), {
+        const updatedAllowedHost = await updateAllowedHost(id, {
           url,
           displayName,
         });
@@ -117,7 +117,7 @@ export async function allowedHostsRoutes(fastify: FastifyInstance) {
       const { id } = request.params as { id: string };
 
       try {
-        const deletedAllowedHost = await deleteAllowedHost(Number(id));
+        const deletedAllowedHost = await deleteAllowedHost(id);
         reply.send({
           message: "Allowed host deleted successfully",
           allowedHost: deletedAllowedHost,

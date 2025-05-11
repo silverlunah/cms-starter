@@ -34,7 +34,7 @@ export async function createAllowedHost(url: string, displayName: string) {
 }
 
 export async function updateAllowedHost(
-  id: number,
+  id: string,
   data: {
     url: string;
     displayName: string;
@@ -53,7 +53,7 @@ export async function updateAllowedHost(
   return updatedUser;
 }
 
-export async function deleteAllowedHost(id: number) {
+export async function deleteAllowedHost(id: string) {
   const deletedAllowedHost = await prisma.allowed_hosts.delete({
     where: { id },
   });

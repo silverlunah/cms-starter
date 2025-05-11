@@ -37,8 +37,8 @@
 
   let isAddingNewHost = false;
 
-  let editingDisplayNameId: number | null = null;
-  let editingUrlId: number | null = null;
+  let editingDisplayNameId: string | null = null;
+  let editingUrlId: string | null = null;
   let editedValue = "";
 
   /**-----------------------
@@ -88,7 +88,7 @@
    *   General Functions
    -----------------------*/
   function startEditing(
-    id: number,
+    id: string,
     value: string,
     field: "displayName" | "url",
   ) {
@@ -102,19 +102,19 @@
 
   function handleKeyOrBlur(
     e: KeyboardEvent | FocusEvent,
-    id: number,
+    id: string,
     field: "displayName" | "url",
   ) {
     if (e instanceof KeyboardEvent && e.key !== "Enter") return;
     handleUpdateAllowedHost(id, field);
   }
 
-  function validateUniqueUrl(newUrl: string, excludeId?: number): boolean {
+  function validateUniqueUrl(newUrl: string, excludeId?: string): boolean {
     const normalizedNewUrl = normalizeUrl(newUrl);
     const duplicate = allowedHosts.find(
       (h) =>
         normalizeUrl(h.url) === normalizedNewUrl &&
-        (excludeId === undefined || Number(h.id) !== excludeId),
+        (excludeId === undefined || String(h.id) !== excludeId),
     );
     if (duplicate) {
       fieldErrors.updateUrl = "This URL is already in use";
@@ -173,10 +173,10 @@
   }
 
   async function handleUpdateAllowedHost(
-    id: number,
+    id: string,
     field: "displayName" | "url",
   ) {
-    const host = allowedHosts.find((h) => Number(h.id) === id);
+    const host = allowedHosts.find((h) => String(h.id) === id);
     if (!host) return;
 
     const updateDisplayName =
@@ -355,24 +355,16 @@
               >
                 <!-- Display Name -->
                 <td class="text-left">
-                  {#if editingDisplayNameId === Number(allowedHost.id) && normalizeUrl(allowedHost.url) !== normalizeUrl(window.location.origin)}
+                  {#if editingDisplayNameId === allowedHost.id && normalizeUrl(allowedHost.url) !== normalizeUrl(window.location.origin)}
                     <input
                       bind:value={editedValue}
                       class="input min-w-44 {fieldErrors.updateDisplayName
                         ? 'input-error'
                         : ''}"
                       on:blur={(e) =>
-                        handleKeyOrBlur(
-                          e,
-                          Number(allowedHost.id),
-                          "displayName",
-                        )}
+                        handleKeyOrBlur(e, allowedHost.id, "displayName")}
                       on:keydown={(e) =>
-                        handleKeyOrBlur(
-                          e,
-                          Number(allowedHost.id),
-                          "displayName",
-                        )}
+                        handleKeyOrBlur(e, allowedHost.id, "displayName")}
                       autofocus
                     />
                     {#if fieldErrors.updateDisplayName}
@@ -394,7 +386,7 @@
                       normalizeUrl(window.location.origin)
                         ? () =>
                             startEditing(
-                              Number(allowedHost.id),
+                              allowedHost.id,
                               allowedHost.displayName,
                               "displayName",
                             )
@@ -409,16 +401,15 @@
 
                 <!-- URL -->
                 <td class="text-left">
-                  {#if editingUrlId === Number(allowedHost.id) && normalizeUrl(allowedHost.url) !== normalizeUrl(window.location.origin)}
+                  {#if editingUrlId === allowedHost.id && normalizeUrl(allowedHost.url) !== normalizeUrl(window.location.origin)}
                     <input
                       bind:value={editedValue}
                       class="input min-w-44 {fieldErrors.updateUrl
                         ? 'input-error'
                         : ''}"
-                      on:blur={(e) =>
-                        handleKeyOrBlur(e, Number(allowedHost.id), "url")}
+                      on:blur={(e) => handleKeyOrBlur(e, allowedHost.id, "url")}
                       on:keydown={(e) =>
-                        handleKeyOrBlur(e, Number(allowedHost.id), "url")}
+                        handleKeyOrBlur(e, allowedHost.id, "url")}
                       autofocus
                     />
                     {#if fieldErrors.updateUrl}
@@ -439,11 +430,7 @@
                       on:click={normalizeUrl(allowedHost.url) !==
                       normalizeUrl(window.location.origin)
                         ? () =>
-                            startEditing(
-                              Number(allowedHost.id),
-                              allowedHost.url,
-                              "url",
-                            )
+                            startEditing(allowedHost.id, allowedHost.url, "url")
                         : null}
                     >
                       <p class="whitespace-nowrap">{allowedHost.url}</p>

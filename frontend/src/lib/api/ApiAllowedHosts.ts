@@ -50,7 +50,7 @@ export async function createAllowedHost(url: string, displayName: string) {
 }
 
 export async function updateAllowedHost(
-  id: number,
+  id: string,
   displayName: string,
   url: string,
 ): Promise<AllowedHost> {

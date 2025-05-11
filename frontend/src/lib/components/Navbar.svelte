@@ -5,7 +5,7 @@
 
 <div class="navbar bg-base-100 shadow-sm sticky top-0 z-50 w-auto">
   <div class="navbar-start">
-    <a href="/" class="ml-4 pixel-h1 text-xl">Back Office</a>
+    <a href="/" class="ml-4 pixel-h1 text-xl">CMS Starter</a>
   </div>
 
   <div class="navbar-center hidden lg:flex">

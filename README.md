@@ -44,6 +44,12 @@ npm run local:frontend:up
 npx prisma migrate dev --name migration-name
 ```
 
+4. For major DB changes, delete migrations then run this first before migrating:
+
+```bash
+npx prisma migrate reset
+```
+
 ## Do Not Forget
 
 1. Add your main website's URL to allowed_hosts db

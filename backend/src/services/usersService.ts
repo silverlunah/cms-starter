@@ -48,7 +48,7 @@ export async function createUser(
 }
 
 export async function updateUser(
-  id: number,
+  id: string,
   data: {
     email: string;
     password?: string;
@@ -87,7 +87,7 @@ export async function updateUser(
   return updatedUser;
 }
 
-export async function toggleUserStatus(id: number, isActive: boolean) {
+export async function toggleUserStatus(id: string, isActive: boolean) {
   let updatedUser;
 
   updatedUser = await prisma.user.update({
@@ -100,7 +100,7 @@ export async function toggleUserStatus(id: number, isActive: boolean) {
   return updatedUser;
 }
 
-export async function deleteUser(id: number) {
+export async function deleteUser(id: string) {
   const deletedUser = await prisma.user.delete({
     where: { id },
   });
