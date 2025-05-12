@@ -22,12 +22,7 @@
   }
 </script>
 
-<button
-  on:click={handleLogout}
-  class={"btn btn-ghost btn-square hover:bg-transparent hover:border-transparent " +
-    additionalClass}
-  aria-label="web logout button"
->
+<a href="#" onclick={handleLogout} class={additionalClass}>
   <svg
     xmlns="http://www.w3.org/2000/svg"
     fill="none"
@@ -42,4 +37,4 @@
       d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"
     />
   </svg>
-</button>
+</a>

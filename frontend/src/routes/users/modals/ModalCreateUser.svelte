@@ -3,11 +3,14 @@
   import { onMount } from "svelte";
   import type { User } from "$lib/types/user";
   import { closeModal } from "$lib/utils/common";
-  import ButtonAdd from "../../../lib/components/buttons/ButtonAdd.svelte";
-  import ButtonClose from "../../../lib/components/buttons/ButtonClose.svelte";
-  import DefaultAvatar from "../../../lib/components/user/DefaultAvatar.svelte";
   import { createUser } from "$lib/api";
   import { triggerNotification } from "$lib/utils/notification";
+  import ButtonAdd from "../../../lib/components/buttons/ButtonAdd.svelte";
+  import ButtonClose from "../../../lib/components/buttons/ButtonClose.svelte";
+  import AvatarDefault from "../../../lib/components/user/AvatarDefault.svelte";
+  import InputFormField from "$lib/components/inputs/InputFormField.svelte";
+  import ModalSection from "$lib/components/modals/ModalSection.svelte";
+  import Modal from "$lib/components/modals/Modal.svelte";
 
   export let selectedUser: User | null = null;
   export let listenRefreshUser: () => void;
@@ -19,6 +22,12 @@
     .object({
       firstName: z.string().min(1, { message: "First name is required" }),
       lastName: z.string().min(1, { message: "Last name is required" }),
+      username: z
+        .string()
+        .min(6, { message: "Username must be at least 6 characters" }),
+      address: z.string().optional(),
+      occupation: z.string().optional(),
+      organization: z.string().optional(),
       email: z.string().email({ message: "Invalid email format" }),
       password: z
         .string()
@@ -38,11 +47,14 @@
    *  User Form Variables
    -----------------------*/
   let errorMessage = "";
-  let successMessage = "";
 
   let firstName = "";
   let lastName = "";
+  let username = "";
   let email = "";
+  let address = "";
+  let occupation = "";
+  let organization = "";
   let password = "";
   let confirmPassword = "";
   let role = 0;
@@ -53,6 +65,7 @@
     confirmPassword: "",
     firstName: "",
     lastName: "",
+    username: "",
   };
 
   /**-----------------------
@@ -62,9 +75,13 @@
     const result = userSchema.safeParse({
       firstName: selectedUser ? selectedUser.firstName : firstName,
       lastName: selectedUser ? selectedUser.lastName : lastName,
+      username: selectedUser ? selectedUser.username : username,
       email: selectedUser ? selectedUser.email : email,
-      password: selectedUser ? "" : password, // Only validate password if new user
-      confirmPassword: selectedUser ? "" : confirmPassword, // Only validate confirmPassword if new user
+      address: selectedUser ? selectedUser.address : address,
+      occupation: selectedUser ? selectedUser.occupation : occupation,
+      organization: selectedUser ? selectedUser.organization : organization,
+      password: selectedUser ? "" : password,
+      confirmPassword: selectedUser ? "" : confirmPassword,
     });
 
     if (!result.success) {
@@ -78,6 +95,7 @@
       return false;
     }
 
+    fieldErrors = {};
     return true;
   }
 
@@ -91,14 +109,23 @@
     }
 
     try {
-      const data = await createUser(email, firstName, lastName, password, role);
-      successMessage = data.message;
+      await createUser(
+        email,
+        firstName,
+        lastName,
+        username,
+        address,
+        occupation,
+        organization,
+        password,
+        role,
+      );
 
-      triggerNotification("Successfully deleted " + email, "success");
+      triggerNotification("Successfully created " + email, "success");
 
       closeModal("createUserModal");
     } catch (err) {
-      fieldErrors["email"] =
+      errorMessage =
         err instanceof Error ? err.message : "An unexpected error occurred";
     }
   }
@@ -112,21 +139,27 @@
     modal?.addEventListener("close", () => {
       // Reset main errors
       errorMessage = "";
-      successMessage = "";
 
       // Reset field errors
       fieldErrors = {
+        firstName: "",
+        lastName: "",
         email: "",
         password: "",
         confirmPassword: "",
-        firstName: "",
-        lastName: "",
+        address: "",
+        occupation: "",
+        organization: "",
       };
 
       // Reset form
       firstName = "";
       lastName = "";
+      username = "";
       email = "";
+      address = "";
+      occupation = "";
+      organization = "";
       password = "";
       confirmPassword = "";
       role = 0;
@@ -137,122 +170,131 @@
   });
 </script>
 
-<dialog id="createUserModal" class="modal">
-  <div class="modal-box max-w-lg max-h-3/4">
-    <div class="flex flex-col gap-6">
-      <h3 class="text-2xl font-bold text-center">Add New User</h3>
-      {#if errorMessage}
-        <p class="text-red-500">{errorMessage}</p>
-      {/if}
-      {#if successMessage}
-        <p class="text-green-500">{successMessage}</p>
-      {/if}
-      <div class="modal-section">
-        <div class="divider">
-          <h3 class="text-lg font-bold">User Information</h3>
-        </div>
-        <div class="flex justify-center my-4">
-          <!-- TODO: <a href="/dashboard" aria-label="Change Avatar"> -->
-          <DefaultAvatar {firstName} {lastName} size="md" />
-          <!-- </a> -->
-        </div>
-        <div class="flex gap-4">
-          <fieldset class="fieldset w-1/2">
-            <legend class="fieldset-legend">First Name</legend>
-            <input
-              type="text"
-              placeholder="First Name"
-              class="input w-full {fieldErrors.firstName ? 'input-error' : ''}"
-              bind:value={firstName}
-            />
-            {#if fieldErrors.firstName}
-              <p class="label text-error">{fieldErrors.firstName}</p>
-            {/if}
-          </fieldset>
-          <fieldset class="fieldset w-1/2">
-            <legend class="fieldset-legend">Last Name</legend>
-            <input
-              type="text"
-              placeholder="Last Name"
-              class="input w-full {fieldErrors.lastName ? 'input-error' : ''}"
-              bind:value={lastName}
-            />
-            {#if fieldErrors.lastName}
-              <p class="label text-error">{fieldErrors.lastName}</p>
-            {/if}
-          </fieldset>
-        </div>
-        <fieldset class="fieldset">
-          <legend class="fieldset-legend">Email</legend>
-          <input
-            type="text"
-            placeholder="Email"
-            class="input w-full {fieldErrors.email ? 'input-error' : ''}"
-            bind:value={email}
-          />
-          {#if fieldErrors.email}
-            <p class="label text-error">{fieldErrors.email}</p>
-          {/if}
-        </fieldset>
-      </div>
-
-      <div class="modal-section">
-        <div class="divider">
-          <h3 class="text-lg font-bold">Password</h3>
-        </div>
-        <div class="flex gap-4">
-          <fieldset class="fieldset w-1/2">
-            <legend class="fieldset-legend">Password</legend>
-            <input
-              type="password"
-              placeholder="Password"
-              class="input w-full {fieldErrors.password ? 'input-error' : ''}"
-              bind:value={password}
-            />
-            {#if fieldErrors.password}
-              <p class="label text-error">{fieldErrors.password}</p>
-            {/if}
-          </fieldset>
-          <fieldset class="fieldset w-1/2">
-            <legend class="fieldset-legend">Confirm Password</legend>
-            <input
-              type="password"
-              placeholder="Confirm Password"
-              class="input w-full {fieldErrors.confirmPassword
-                ? 'input-error'
-                : ''}"
-              bind:value={confirmPassword}
-            />
-            {#if fieldErrors.confirmPassword}
-              <p class="label text-error">
-                {fieldErrors.confirmPassword}
-              </p>
-            {/if}
-          </fieldset>
-        </div>
-      </div>
-
-      <div class="modal-section">
-        <div class="divider">
-          <h3 class="text-lg font-bold">Settings</h3>
-        </div>
-        <fieldset class="fieldset">
-          <legend class="fieldset-legend">Role</legend>
-          <select class="select w-full" bind:value={role}>
-            <option disabled>Select a role</option>
-            <option value={0}>Admin</option>
-            <option value={1}>User</option>
-          </select>
-        </fieldset>
-      </div>
+<Modal
+  id="createUserModal"
+  label="Create New User"
+  additionalClass="max-w-lg max-h-3/4"
+>
+  <ModalSection label="User Information">
+    <div class="flex justify-center my-4">
+      <!-- TODO: Upload Picture -->
+      <AvatarDefault {firstName} {lastName} size="md" />
     </div>
-
-    <div class="modal-action mt-4">
-      <ButtonAdd label="Create User" onclick={handleCreateUser} />
-      <ButtonClose
-        label="Close"
-        onclick={() => closeModal("createUserModal")}
+    <div class="flex gap-4">
+      <fieldset class="fieldset w-1/2">
+        <InputFormField
+          bind:value={firstName}
+          type="text"
+          label="First Name"
+          placeholder="First Name"
+          additionalClass="w-full"
+          fieldError={fieldErrors.firstName}
+        />
+      </fieldset>
+      <fieldset class="fieldset w-1/2">
+        <InputFormField
+          bind:value={lastName}
+          type="text"
+          label="Last Name"
+          placeholder="Last Name"
+          additionalClass="w-full"
+          fieldError={fieldErrors.lastName}
+        />
+      </fieldset>
+    </div>
+    <fieldset class="fieldset">
+      <InputFormField
+        bind:value={username}
+        type="text"
+        label="Username"
+        placeholder="Username"
+        additionalClass="w-full"
+        fieldError={fieldErrors.username}
       />
+    </fieldset>
+    <fieldset class="fieldset">
+      <InputFormField
+        bind:value={email}
+        type="text"
+        label="Email"
+        placeholder="Email"
+        additionalClass="w-full"
+        fieldError={fieldErrors.email}
+      />
+    </fieldset>
+    <fieldset class="fieldset">
+      <InputFormField
+        bind:value={address}
+        type="text"
+        label="Address"
+        placeholder="Address"
+        additionalClass="w-full"
+        fieldError={fieldErrors.address}
+      />
+    </fieldset>
+    <div class="flex gap-4">
+      <fieldset class="fieldset w-1/2">
+        <InputFormField
+          bind:value={occupation}
+          type="text"
+          label="Occupation"
+          placeholder="Occupation"
+          additionalClass="w-full"
+          fieldError={fieldErrors.occupation}
+        />
+      </fieldset>
+      <fieldset class="fieldset w-1/2">
+        <InputFormField
+          bind:value={organization}
+          type="text"
+          label="Organization"
+          placeholder="Organization"
+          additionalClass="w-full"
+          fieldError={fieldErrors.organization}
+        />
+      </fieldset>
     </div>
+  </ModalSection>
+  <ModalSection label="Password">
+    <div class="flex gap-4">
+      <fieldset class="fieldset w-1/2">
+        <InputFormField
+          bind:value={password}
+          type="password"
+          label="Password"
+          placeholder="Password"
+          additionalClass="w-full"
+          fieldError={fieldErrors.password}
+        />
+      </fieldset>
+      <fieldset class="fieldset w-1/2">
+        <InputFormField
+          bind:value={confirmPassword}
+          type="password"
+          label="Confirm Password"
+          placeholder="Confirm Password"
+          additionalClass="w-full"
+          fieldError={fieldErrors.confirmPassword}
+        />
+      </fieldset>
+    </div>
+  </ModalSection>
+
+  <ModalSection label="Settings">
+    <fieldset class="fieldset">
+      <legend class="fieldset-legend">Role</legend>
+      <select class="select w-full" bind:value={role}>
+        <option disabled>Select a role</option>
+        <option value={0}>Admin</option>
+        <option value={1}>User</option>
+      </select>
+    </fieldset>
+  </ModalSection>
+  <div class="server-error text-right text-sm text-error">
+    {errorMessage}
   </div>
-</dialog>
+  <div class="modal-action mt-4">
+    <ButtonAdd label="Create User" onclick={handleCreateUser} />
+    <ButtonClose label="Close" onclick={() => closeModal("createUserModal")} />
+  </div>
+</Modal>

@@ -1,4 +1,3 @@
-// src/hooks.server.ts
 import type { Handle } from "@sveltejs/kit";
 import { verifyJWT } from "$lib/server/auth";
 

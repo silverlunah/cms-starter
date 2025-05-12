@@ -10,22 +10,43 @@ generator client {
   seed     = "ts-node prisma/seed.ts"
 }
 
-model user {
-  id          String   @id @default(uuid()) @db.Char(36)
-  email       String    @unique
-  password    String
-  firstName   String
-  lastName    String
-  role        Int       @default(0)
-  isActive    Boolean   @default(true)
+model users {
+  id             String        @id @default(uuid()) @db.Char(36)
+  email          String        @unique
+  username       String        @unique
+  imgId          String?       @unique
+  password       String
+  firstName      String
+  lastName       String
+  role           Int           @default(0)
+  address        String?
+  occupation     String?
+  organization   String?
+  isActive       Boolean       @default(true)
+  isLocked       Boolean       @default(false)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime?     @updatedAt
+
+  userImages    images[]       @relation("UserImages")
+}
+
+model allowed_hosts {
+  id          String    @id @default(uuid()) @db.Char(36)
+  url         String    @unique
+  displayName String?
+  isLocked    Boolean   @default(false)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime? @updatedAt
 }
 
-model allowed_hosts {
-  id          String   @id @default(uuid()) @db.Char(36)
+model images {
+  id          String    @id @default(uuid()) @db.Char(36)
+  userId      String 
   url         String    @unique
-  displayName String
+  type        String
+  isActive    Boolean   @default(true)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime? @updatedAt
+
+  user        users     @relation("UserImages", fields: [userId], references: [id])
 }

@@ -19,7 +19,7 @@
   import ButtonClose from "$lib/components/buttons/ButtonClose.svelte";
   import ButtonAdd from "$lib/components/buttons/ButtonAdd.svelte";
   import ButtonSave from "$lib/components/buttons/ButtonSave.svelte";
-  import SectionHeading from "$lib/components/pages/SectionHeading.svelte";
+  import PageSectionHeading from "$lib/components/pages/PageSectionHeading.svelte";
   import ButtonPagination from "$lib/components/buttons/ButtonPagination.svelte";
   import { triggerNotification } from "$lib/utils/notification";
 
@@ -207,7 +207,6 @@
     });
 
     if (!validation.success) {
-      console.log(validation.error.issues);
       fieldErrors = {};
       for (const issue of validation.error.issues) {
         fieldErrors[issue.path[0]] = issue.message;
@@ -273,7 +272,7 @@
 {:else}
   <div class="card w-96 md:w-3xl pixel-p p-4 text-center">
     <div class="w-full flex flex-col">
-      <SectionHeading
+      <PageSectionHeading
         title="Allowed Hosts"
         description="If you have multiple websites that would utilize the CMS, you need
           to add each URL here to start making API calls."

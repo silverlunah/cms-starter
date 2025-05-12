@@ -14,16 +14,22 @@ export async function getUsers(): Promise<User[]> {
   }
 
   const data: UsersResponse = await res.json();
-
   return data.users
     .map(
       (user: User): User => ({
         id: user.id,
         email: user.email,
+        username: user.username,
         firstName: user.firstName,
         lastName: user.lastName,
+        imgId: user.imgId,
+        address: user.address,
+        organization: user.organization,
+        occupation: user.occupation,
         role: user.role,
         isActive: user.isActive,
+        isLocked: user.isLocked,
+        avatarUrl: user.avatarUrl,
         createdAt: new Date(user.createdAt).toLocaleString(),
         updatedAt: new Date(user.updatedAt).toLocaleString(),
       }),
@@ -38,6 +44,10 @@ export async function createUser(
   email: string,
   firstName: string,
   lastName: string,
+  username: string,
+  address: string,
+  occupation: string,
+  organization: string,
   password: string,
   role: number,
 ) {
@@ -51,8 +61,12 @@ export async function createUser(
       email: email.toLowerCase(),
       firstName: toProperCase(firstName),
       lastName: toProperCase(lastName),
-      password,
+      username: username,
+      address: address,
+      occupation: occupation,
+      organization: organization,
       role: role,
+      password,
     }),
   });
 
@@ -75,6 +89,10 @@ export async function updateUser(
   email: string,
   firstName: string,
   lastName: string,
+  username: string,
+  address: string,
+  occupation: string,
+  organization: string,
   password: string,
   role: number,
 ) {
@@ -82,6 +100,10 @@ export async function updateUser(
     email: email.toLowerCase(),
     firstName: toProperCase(firstName),
     lastName: toProperCase(lastName),
+    username: username,
+    address: address,
+    occupation: occupation,
+    organization: organization,
     role,
     ...(password ? { password } : {}), // include password only if non-empty
   };

@@ -7,17 +7,18 @@
     formatTimeAndDateUS,
   } from "$lib/utils/common";
   import { onMount } from "svelte";
+  import { deleteUser, toggleUserStatus, updateUser } from "$lib/api";
+  import { triggerNotification } from "$lib/utils/notification";
   import ButtonSave from "$lib/components/buttons/ButtonSave.svelte";
   import ButtonClose from "$lib/components/buttons/ButtonClose.svelte";
   import ButtonDelete from "$lib/components/buttons/ButtonDelete.svelte";
   import ButtonAgree from "$lib/components/buttons/ButtonAgree.svelte";
-  import DefaultAvatar from "$lib/components/user/DefaultAvatar.svelte";
-  import {
-    notificationMessage,
-    notificationType,
-  } from "$lib/stores/notification";
-  import { deleteUser, toggleUserStatus, updateUser } from "$lib/api";
-  import { triggerNotification } from "$lib/utils/notification";
+  import AvatarDefault from "$lib/components/user/AvatarDefault.svelte";
+  import AvatarHasImg from "$lib/components/user/AvatarHasImg.svelte";
+  import Modal from "$lib/components/modals/Modal.svelte";
+  import ModalSection from "$lib/components/modals/ModalSection.svelte";
+  import { currentUser } from "$lib/stores/currentUser";
+  import type { CurrentUser } from "$lib/types/currentUser";
 
   export let selectedUser: User | null = null;
   export let listenRefreshUser: () => void;
@@ -25,14 +26,17 @@
   let users: User[] = [];
   let confirmDeleteEmail = "";
   let errorMessage = "";
-  let successMessage = "";
 
   /**-----------------------
    *    Form Variables
    -----------------------*/
   let firstName = "";
   let lastName = "";
+  let username = "";
   let email = "";
+  let address = "";
+  let occupation = "";
+  let organization = "";
   let password = "";
   let confirmPassword = "";
   let role = 0;
@@ -46,6 +50,12 @@
     .object({
       firstName: z.string().min(1, { message: "First name is required" }),
       lastName: z.string().min(1, { message: "Last name is required" }),
+      username: z
+        .string()
+        .min(6, { message: "Username must be atleast 6 characters" }),
+      address: z.string().optional(),
+      occupation: z.string().optional(),
+      organization: z.string().optional(),
       email: z.string().email({ message: "Invalid email format" }),
       password: z
         .string()
@@ -77,7 +87,11 @@
   $: if (selectedUser) {
     firstName = selectedUser.firstName;
     lastName = selectedUser.lastName;
+    username = selectedUser.username;
     email = selectedUser.email;
+    address = selectedUser.address;
+    occupation = selectedUser.occupation;
+    organization = selectedUser.organization;
     role = selectedUser.role;
   }
 
@@ -85,6 +99,10 @@
     selectedUser &&
     (firstName !== selectedUser.firstName ||
       lastName !== selectedUser.lastName ||
+      username !== selectedUser.username ||
+      address !== selectedUser.address ||
+      occupation !== selectedUser.occupation ||
+      organization !== selectedUser.organization ||
       email.toLowerCase() !== selectedUser.email.toLowerCase() ||
       role !== selectedUser.role ||
       password.length > 0 || // only care if password is being updated
@@ -95,11 +113,13 @@
    -----------------------*/
   function resetForm() {
     errorMessage = "";
-    successMessage = "";
     fieldErrors = {};
     firstName = "";
     lastName = "";
     email = "";
+    address = "";
+    occupation = "";
+    organization = "";
     password = "";
     confirmPassword = "";
     confirmDeleteEmail = "";
@@ -107,18 +127,24 @@
   }
 
   function validateForm() {
-    const result = userSchema.safeParse({
+    const input = {
       firstName,
       lastName,
+      username,
+      address: address ?? undefined,
+      occupation: occupation ?? undefined,
+      organization: organization ?? undefined,
       email,
       password,
       confirmPassword,
-    });
+    };
+
+    const result = userSchema.safeParse(input);
 
     if (!result.success) {
       fieldErrors = result.error.errors.reduce(
         (acc, error) => {
-          acc[error.path[0]] = error.message;
+          acc[error.path[0] as string] = error.message;
           return acc;
         },
         {} as Record<string, string>,
@@ -128,6 +154,39 @@
 
     fieldErrors = {};
     return true;
+  }
+
+  function updateUserSessionVariables() {
+    if ($currentUser) {
+      if (String($currentUser.id) === selectedUser?.id) {
+        currentUser.update((u) =>
+          u
+            ? {
+                ...u,
+                email,
+                firstName,
+                lastName,
+                username,
+                role,
+                // password usually omitted for security
+              }
+            : null,
+        );
+      }
+    }
+
+    const updatedUser: CurrentUser = {
+      id: Number(selectedUser?.id) || 0,
+      avatarUrl: $currentUser?.avatarUrl ?? "",
+      firstName,
+      lastName,
+      email,
+      username,
+      role,
+    };
+
+    currentUser.set(updatedUser);
+    localStorage.setItem("user", JSON.stringify(updatedUser));
   }
 
   /**-----------------------
@@ -145,6 +204,10 @@
         email,
         firstName,
         lastName,
+        username,
+        address,
+        occupation,
+        organization,
         password,
         role,
       );
@@ -153,9 +216,12 @@
 
       closeModal("updateUserModal");
     } catch (err) {
-      fieldErrors["email"] =
+      errorMessage =
         err instanceof Error ? err.message : "An unexpected error occurred";
     }
+
+    updateUserSessionVariables();
+    listenRefreshUser();
   }
 
   async function handleDisableUser() {
@@ -228,268 +294,314 @@
   });
 </script>
 
-<dialog id="updateUserModal" class="modal">
-  <div class="modal-box max-w-lg max-h-3/4">
-    {#if selectedUser}
-      <div class="flex flex-col gap-6">
-        <h3 class="text-2xl font-bold text-center">Edit User</h3>
-        <div class="modal-section">
-          <div class="divider">
-            <h3 class="text-lg font-bold">User Information</h3>
-          </div>
-          <div class="flex justify-center my-4">
-            <!-- TODO: <a href="/dashboard" aria-label="Change Avatar"> -->
-
-            <DefaultAvatar {firstName} {lastName} size="md" />
-            <!-- </a> -->
-          </div>
-          <div class="flex gap-4">
-            <fieldset class="fieldset w-1/2">
-              <legend class="fieldset-legend">First Name</legend>
-              <input
-                type="text"
-                placeholder="First Name"
-                class="input w-full {fieldErrors.firstName
-                  ? 'input-error'
-                  : ''}"
-                bind:value={firstName}
-              />
-              {#if fieldErrors.firstName}
-                <p class="label text-error">{fieldErrors.firstName}</p>
-              {/if}
-            </fieldset>
-            <fieldset class="fieldset w-1/2">
-              <legend class="fieldset-legend">Last Name</legend>
-              <input
-                type="text"
-                placeholder="Last Name"
-                class="input w-full {fieldErrors.lastName ? 'input-error' : ''}"
-                bind:value={lastName}
-              />
-              {#if fieldErrors.lastName}
-                <p class="label text-error">{fieldErrors.lastName}</p>
-              {/if}
-            </fieldset>
-          </div>
-          <fieldset class="fieldset">
-            <legend class="fieldset-legend">Email</legend>
-            <input
-              type="text"
-              placeholder="Email"
-              class="input w-full {fieldErrors.email ? 'input-error' : ''}"
-              bind:value={email}
-            />
-            {#if fieldErrors.email}
-              <p class="label text-error">{fieldErrors.email}</p>
-            {/if}
-          </fieldset>
-        </div>
-
-        <div class="modal-section">
-          <div class="divider">
-            <h3 class="text-lg font-bold">Update Password</h3>
-          </div>
-          <div class="flex gap-4">
-            <fieldset class="fieldset w-1/2">
-              <legend class="fieldset-legend">New Password</legend>
-              <input
-                type="password"
-                placeholder="New Password"
-                class="input w-full {fieldErrors.password ? 'input-error' : ''}"
-                bind:value={password}
-              />
-              {#if fieldErrors.password}
-                <p class="label text-error">{fieldErrors.password}</p>
-              {/if}
-            </fieldset>
-            <fieldset class="fieldset w-1/2">
-              <legend class="fieldset-legend">Confirm Password</legend>
-              <input
-                type="password"
-                placeholder="Confirm Password"
-                class="input w-full {fieldErrors.confirmPassword
-                  ? 'input-error'
-                  : ''}"
-                bind:value={confirmPassword}
-              />
-              {#if fieldErrors.confirmPassword}
-                <p class="label text-error">
-                  {fieldErrors.confirmPassword}
-                </p>
-              {/if}
-            </fieldset>
-          </div>
-        </div>
-
-        <div class="modal-section">
-          <div class="divider">
-            <h3 class="text-lg font-bold">Settings</h3>
-          </div>
-          <fieldset class="fieldset">
-            <legend class="fieldset-legend">Role</legend>
-
-            <select class="select w-full" bind:value={role}>
-              <option disabled>Select a role</option>
-              <option value={0}>Admin</option>
-              <option value={1}>User</option>
-            </select>
-            {#if fieldErrors.role}
-              <p class="label text-error">{fieldErrors.role}</p>
-            {/if}
-          </fieldset>
-        </div>
-
-        <div class="modal-section">
-          <div class="divider">
-            <h3 class="text-lg font-bold">Other Information</h3>
-          </div>
-          <div class="flex gap-4">
-            <fieldset class="fieldset w-1/2">
-              <legend class="fieldset-legend">Created</legend>
-              <input
-                type="text"
-                placeholder="Created At"
-                class="input w-full"
-                disabled
-                value={formatTimeAndDateUS(selectedUser.createdAt)}
-              />
-            </fieldset>
-            <fieldset class="fieldset w-1/2">
-              <legend class="fieldset-legend">Last Updated</legend>
-              <input
-                type="text"
-                placeholder="Updated At"
-                class="input w-full"
-                disabled
-                value={formatTimeAndDateUS(selectedUser.updatedAt)}
-              />
-            </fieldset>
-          </div>
-        </div>
-
-        <div class="modal-section">
-          <div class="divider">
-            <h3 class="text-lg font-bold">User Management</h3>
-          </div>
-          <div class="gap-4">
-            <fieldset class="fieldset">
-              {#if !selectedUser.isActive}
-                <legend class="fieldset-legend">This user is inactive</legend>
-                <button
-                  class="btn btn-soft btn-success w-full"
-                  onclick={() => triggerModal("confirmUserStatusModal")}
-                  >Enable</button
-                >
-                <p class="label input-label">
-                  This user cannot login their account.
-                </p>
-              {:else}
-                <legend class="fieldset-legend">This user is active</legend>
-                <button
-                  class="btn btn-error w-full"
-                  onclick={() => triggerModal("confirmUserStatusModal")}
-                  >Disable</button
-                >
-                <p class="label input-label">
-                  This user is allowed to login their account.
-                </p>
-              {/if}
-            </fieldset>
-          </div>
-          <div class="flex gap-4">
-            <fieldset class="fieldset w-1/2">
-              <legend class="fieldset-legend">Enter the email to delete</legend>
-              <input
-                type="text"
-                placeholder="Email"
-                class="input w-full"
-                bind:value={confirmDeleteEmail}
-              />
-            </fieldset>
-            <fieldset class="fieldset w-1/2">
-              <legend class="fieldset-legend">Click to Delete</legend>
-              <ButtonDelete
-                label="Delete"
-                additionalClass="w-full"
-                onclick={() => triggerModal("confirmDeleteUserModal")}
-                disabled={confirmDeleteEmail !== selectedUser?.email}
-              />
-              <p class="label input-label">This is not reversible</p>
-            </fieldset>
-          </div>
-        </div>
+<Modal
+  id="updateUserModal"
+  label="Update User"
+  additionalClass="max-w-lg max-h-3/4"
+>
+  {#if selectedUser}
+    <ModalSection label="User Information">
+      <div class="flex justify-center my-4">
+        <!-- TODO: Change avatar upload -->
+        {#if selectedUser.avatarUrl}
+          <AvatarHasImg imgUrl={selectedUser.avatarUrl} size="md" />
+        {:else}
+          <AvatarDefault {firstName} {lastName} size="md" />
+        {/if}
       </div>
-      <div class="modal-action mt-4">
-        <ButtonSave
-          label="Save"
-          onclick={handleUpdateUser}
-          disabled={!isDirty}
+      <div class="flex gap-4">
+        <fieldset class="fieldset w-1/2">
+          <legend class="fieldset-legend">First Name</legend>
+          <input
+            type="text"
+            placeholder="First Name"
+            class="input w-full {fieldErrors.firstName ? 'input-error' : ''}"
+            bind:value={firstName}
+          />
+          {#if fieldErrors.firstName}
+            <p class="label text-error">{fieldErrors.firstName}</p>
+          {/if}
+        </fieldset>
+        <fieldset class="fieldset w-1/2">
+          <legend class="fieldset-legend">Last Name</legend>
+          <input
+            type="text"
+            placeholder="Last Name"
+            class="input w-full {fieldErrors.lastName ? 'input-error' : ''}"
+            bind:value={lastName}
+          />
+          {#if fieldErrors.lastName}
+            <p class="label text-error">{fieldErrors.lastName}</p>
+          {/if}
+        </fieldset>
+      </div>
+      <fieldset class="fieldset">
+        <legend class="fieldset-legend">Username</legend>
+        <input
+          type="text"
+          placeholder="Username"
+          class="input w-full {fieldErrors.username ? 'input-error' : ''}"
+          bind:value={username}
+        />
+        {#if fieldErrors.username}
+          <p class="label text-error">{fieldErrors.username}</p>
+        {/if}
+      </fieldset>
+      <fieldset class="fieldset">
+        <legend class="fieldset-legend">Email</legend>
+        <input
+          type="text"
+          placeholder="Email"
+          class="input w-full {fieldErrors.email ? 'input-error' : ''}"
+          bind:value={email}
+        />
+        {#if fieldErrors.email}
+          <p class="label text-error">{fieldErrors.email}</p>
+        {/if}
+      </fieldset>
+      <fieldset class="fieldset">
+        <legend class="fieldset-legend">Address</legend>
+        <input
+          type="text"
+          placeholder="Address"
+          class="input w-full {fieldErrors.address ? 'input-error' : ''}"
+          bind:value={address}
+        />
+        {#if fieldErrors.address}
+          <p class="label text-error">{fieldErrors.address}</p>
+        {/if}
+      </fieldset>
+      <div class="flex gap-4">
+        <fieldset class="fieldset w-1/2">
+          <legend class="fieldset-legend">Occupation</legend>
+          <input
+            type="text"
+            placeholder="Occupation"
+            class="input w-full {fieldErrors.occupation ? 'input-error' : ''}"
+            bind:value={occupation}
+          />
+          {#if fieldErrors.occupation}
+            <p class="label text-error">{fieldErrors.occupation}</p>
+          {/if}
+        </fieldset>
+        <fieldset class="fieldset w-1/2">
+          <legend class="fieldset-legend">Organization</legend>
+          <input
+            type="text"
+            placeholder="Organization"
+            class="input w-full {fieldErrors.organization ? 'input-error' : ''}"
+            bind:value={organization}
+          />
+          {#if fieldErrors.organization}
+            <p class="label text-error">{fieldErrors.organization}</p>
+          {/if}
+        </fieldset>
+      </div>
+    </ModalSection>
+
+    <ModalSection label="Update Password">
+      <div class="flex gap-4">
+        <fieldset class="fieldset w-1/2">
+          <legend class="fieldset-legend">New Password</legend>
+          <input
+            type="password"
+            placeholder="New Password"
+            class="input w-full {fieldErrors.password ? 'input-error' : ''}"
+            bind:value={password}
+          />
+          {#if fieldErrors.password}
+            <p class="label text-error">{fieldErrors.password}</p>
+          {/if}
+        </fieldset>
+        <fieldset class="fieldset w-1/2">
+          <legend class="fieldset-legend">Confirm Password</legend>
+          <input
+            type="password"
+            placeholder="Confirm Password"
+            class="input w-full {fieldErrors.confirmPassword
+              ? 'input-error'
+              : ''}"
+            bind:value={confirmPassword}
+          />
+          {#if fieldErrors.confirmPassword}
+            <p class="label text-error">
+              {fieldErrors.confirmPassword}
+            </p>
+          {/if}
+        </fieldset>
+      </div>
+    </ModalSection>
+
+    <ModalSection label="Settings">
+      {#if selectedUser?.isLocked}
+        <p class="text-xs text-error">This user is locked</p>
+      {/if}
+
+      <fieldset class="fieldset">
+        <legend class="fieldset-legend">Role</legend>
+
+        <select
+          class="select w-full"
+          bind:value={role}
+          disabled={selectedUser?.isLocked || selectedUser?.role === 99}
+        >
+          <option disabled>Select a role</option>
+          <option value={0}>Admin</option>
+          <option value={1}>User</option>
+          <option value={99}>Owner</option>
+        </select>
+        {#if fieldErrors.role}
+          <p class="label text-error">{fieldErrors.role}</p>
+        {/if}
+      </fieldset>
+    </ModalSection>
+
+    <ModalSection label="Other Information">
+      <div class="flex gap-4">
+        <fieldset class="fieldset w-1/2">
+          <legend class="fieldset-legend">Created</legend>
+          <input
+            type="text"
+            placeholder="Created At"
+            class="input w-full"
+            disabled
+            value={formatTimeAndDateUS(selectedUser.createdAt)}
+          />
+        </fieldset>
+        <fieldset class="fieldset w-1/2">
+          <legend class="fieldset-legend">Last Updated</legend>
+          <input
+            type="text"
+            placeholder="Updated At"
+            class="input w-full"
+            disabled
+            value={formatTimeAndDateUS(selectedUser.updatedAt)}
+          />
+        </fieldset>
+      </div>
+    </ModalSection>
+
+    <ModalSection label="User Management">
+      {#if selectedUser?.isLocked}
+        <p class="text-xs text-error">This user is locked</p>
+      {/if}
+
+      <div class="gap-4">
+        <fieldset class="fieldset">
+          {#if !selectedUser.isActive}
+            <legend class="fieldset-legend">This user is inactive</legend>
+            <button
+              class="btn btn-soft btn-success w-full"
+              disabled={selectedUser?.isLocked || selectedUser?.role === 99}
+              onclick={() => triggerModal("confirmUserStatusModal")}
+              >Enable</button
+            >
+            <p class="label input-label">
+              This user cannot login their account
+            </p>
+          {:else}
+            <legend class="fieldset-legend">This user is active</legend>
+            <button
+              class="btn btn-error w-full"
+              disabled={selectedUser?.isLocked || selectedUser?.role === 99}
+              onclick={() => triggerModal("confirmUserStatusModal")}
+              >Disable</button
+            >
+            <p class="label input-label">
+              This user is allowed to login their account
+            </p>
+          {/if}
+        </fieldset>
+      </div>
+      <div class="flex gap-4">
+        <fieldset class="fieldset w-1/2">
+          <legend class="fieldset-legend">Enter the email to delete</legend>
+          <input
+            type="text"
+            placeholder="Email"
+            class="input w-full"
+            disabled={selectedUser?.isLocked || selectedUser?.role === 99}
+            bind:value={confirmDeleteEmail}
+          />
+        </fieldset>
+        <fieldset class="fieldset w-1/2">
+          <legend class="fieldset-legend">Click to Delete</legend>
+          <ButtonDelete
+            label="Delete"
+            additionalClass="w-full"
+            onclick={() => triggerModal("confirmDeleteUserModal")}
+            disabled={confirmDeleteEmail !== selectedUser?.email ||
+              selectedUser?.isLocked ||
+              selectedUser?.role === 99}
+          />
+          <p class="label input-label">This is not reversible</p>
+        </fieldset>
+      </div>
+    </ModalSection>
+    <div class="server-error text-right text-sm text-error">
+      {errorMessage}
+    </div>
+    <div class="modal-action mt-4">
+      <ButtonSave label="Save" onclick={handleUpdateUser} disabled={!isDirty} />
+      <ButtonClose
+        label="Close"
+        onclick={() => closeModal("updateUserModal")}
+      />
+    </div>
+
+    <Modal
+      id="confirmDeleteUserModal"
+      label="Confirm Deletion"
+      additionalClass="max-w-96 max-h-3/4"
+    >
+      <p class="text-center">
+        Are you sure you want to delete <strong>{selectedUser?.email}</strong>?
+        <br /><br />This action
+        <span class="text-red-500 font-semibold">cannot be undone</span>.
+      </p>
+      <div class="modal-action justify-center">
+        <ButtonDelete
+          label="Yes, Delete"
+          onclick={() => {
+            handleDeleteUser();
+            closeModal("confirmDeleteUserModal");
+          }}
         />
         <ButtonClose
-          label="Close"
-          onclick={() => closeModal("updateUserModal")}
+          label="No"
+          onclick={() => closeModal("confirmDeleteUserModal")}
         />
       </div>
+    </Modal>
 
-      <dialog id="confirmDeleteUserModal" class="modal">
-        <div class="modal-box max-w-96 max-h-3/4">
-          <div class="flex flex-col gap-4">
-            <h3 class="font-bold text-lg text-center">Confirm Deletion</h3>
-            <p class="text-center">
-              Are you sure you want to delete <strong
-                >{selectedUser?.email}</strong
-              >? <br /><br />This action
-              <span class="text-red-500 font-semibold">cannot be undone</span>.
-            </p>
-            <div class="modal-action justify-center">
-              <ButtonDelete
-                label="Yes, Delete"
-                onclick={() => {
-                  handleDeleteUser();
-                  closeModal("confirmDeleteUserModal");
-                }}
-              />
-              <ButtonClose
-                label="No"
-                onclick={() => closeModal("confirmDeleteUserModal")}
-              />
-            </div>
-          </div>
-        </div>
-      </dialog>
+    <Modal
+      id="confirmUserStatusModal"
+      label={!selectedUser.isActive ? "Enable Access?" : "Remove Access?"}
+      additionalClass="max-w-96 max-h-3/4"
+    >
+      {#if !selectedUser.isActive}
+        <p class="text-center">
+          Let <strong>{selectedUser?.email}</strong> login their account?
+        </p>
+      {:else}
+        <p class="text-center">
+          <strong>{selectedUser?.email}</strong> will not be able to login. Continue?
+        </p>
+      {/if}
 
-      <dialog id="confirmUserStatusModal" class="modal">
-        <div class="modal-box max-w-96 max-h-3/4">
-          <div class="flex flex-col gap-6">
-            {#if !selectedUser.isActive}
-              <h3 class="font-bold text-lg text-center">Confirm Enable</h3>
-              <p class="text-center">
-                Let <strong>{selectedUser?.email}</strong> login their account?
-              </p>
-            {:else}
-              <h3 class="font-bold text-lg text-center">Confirm Disable</h3>
-              <p class="text-center">
-                <strong>{selectedUser?.email}</strong> will not be able to login.
-                Continue?
-              </p>
-            {/if}
-
-            <div class="modal-action justify-center">
-              <ButtonAgree
-                label="Yes"
-                onclick={() => {
-                  handleDisableUser();
-                  closeModal("confirmUserStatusModal");
-                }}
-              />
-              <ButtonClose
-                label="No"
-                onclick={() => closeModal("confirmUserStatusModal")}
-              />
-            </div>
-          </div>
-        </div>
-      </dialog>
-    {/if}
-  </div>
-</dialog>
+      <div class="modal-action justify-center">
+        <ButtonAgree
+          label="Yes"
+          onclick={() => {
+            handleDisableUser();
+            closeModal("confirmUserStatusModal");
+          }}
+        />
+        <ButtonClose
+          label="No"
+          onclick={() => closeModal("confirmUserStatusModal")}
+        />
+      </div>
+    </Modal>
+  {/if}
+</Modal>

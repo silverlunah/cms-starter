@@ -36,18 +36,36 @@ export async function usersRoutes(fastify: FastifyInstance) {
             password: { type: "string", minLength: 6 },
             firstName: { type: "string", minLength: 1 },
             lastName: { type: "string", minLength: 1 },
-            role: { type: "number", enum: [0, 1] },
+            username: { type: "string", minLength: 6 },
+            address: { type: "string" },
+            occupation: { type: "string" },
+            organization: { type: "string" },
+            role: { type: "number", enum: [0, 1, 99] },
           },
           additionalProperties: false,
         },
       },
     },
     async (request, reply) => {
-      const { email, password, firstName, lastName, role } = request.body as {
+      const {
+        email,
+        password,
+        firstName,
+        lastName,
+        username,
+        address,
+        occupation,
+        organization,
+        role,
+      } = request.body as {
         email: string;
         password: string;
         firstName: string;
         lastName: string;
+        username: string;
+        address?: string;
+        occupation?: string;
+        organization?: string;
         role: number;
       };
 
@@ -57,7 +75,11 @@ export async function usersRoutes(fastify: FastifyInstance) {
           password,
           firstName,
           lastName,
-          role
+          username,
+          role,
+          address,
+          occupation,
+          organization
         );
         reply
           .code(201)
@@ -86,13 +108,26 @@ export async function usersRoutes(fastify: FastifyInstance) {
         },
         body: {
           type: "object",
-          required: ["email", "firstName", "lastName", "role"],
+          required: [
+            "email",
+            "firstName",
+            "lastName",
+            "username",
+            "address",
+            "occupation",
+            "organization",
+            "role",
+          ],
           properties: {
             email: { type: "string", format: "email" },
             password: { type: "string", minLength: 6 },
             firstName: { type: "string", minLength: 1 },
             lastName: { type: "string", minLength: 1 },
-            role: { type: "number", enum: [0, 1] },
+            username: { type: "string", minLength: 6 },
+            address: { type: "string" },
+            occupation: { type: "string" },
+            organization: { type: "string" },
+            role: { type: "number", enum: [0, 1, 99] },
           },
           additionalProperties: false,
         },
@@ -100,12 +135,26 @@ export async function usersRoutes(fastify: FastifyInstance) {
     },
     async (request, reply) => {
       const { id } = request.params as { id: string };
-      const { email, password, firstName, lastName, role } = request.body as {
+      const {
+        email,
+        password,
+        firstName,
+        lastName,
+        username,
+        role,
+        address,
+        occupation,
+        organization,
+      } = request.body as {
         email: string;
         password?: string;
         firstName: string;
         lastName: string;
+        username: string;
         role: number;
+        address?: string;
+        occupation?: string;
+        organization?: string;
       };
 
       try {
@@ -114,7 +163,11 @@ export async function usersRoutes(fastify: FastifyInstance) {
           password,
           firstName,
           lastName,
+          username,
           role,
+          address,
+          occupation,
+          organization,
         });
 
         reply.send({ message: "User updated successfully", user: updatedUser });

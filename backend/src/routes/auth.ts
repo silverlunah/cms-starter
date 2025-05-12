@@ -14,23 +14,41 @@ export async function authRoutes(fastify: FastifyInstance): Promise<void> {
     try {
       const user = await authenticateUser(email, password);
 
-      // Sign JWT
-      const token = fastify.jwt.sign({ email: user.email });
+      const token = fastify.jwt.sign({
+        id: user.id,
+        avatarUrl: user.avatarUrl,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        username: user.username,
+        role: user.role,
+      });
 
-      // Set cookie with the transformed domain
       reply
-        .header("Cache-Control", "no-store") // prevent caching of auth response
+        .header("Cache-Control", "no-store")
         .setCookie("token", token, {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
           sameSite: "lax",
           path: "/",
-          maxAge: 60 * 60 * 24, // 1 day
+          maxAge: 60 * 60 * 24,
           ...(process.env.NODE_ENV === "production" && {
             domain: domain,
           }),
         })
-        .send({ message: "Login successful", token });
+        .send({
+          message: "Login successful",
+          token,
+          user: {
+            id: user.id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            avatarUrl: user.avatarUrl,
+            email: user.email,
+            username: user.username,
+            role: user.role,
+          },
+        });
     } catch (error: unknown) {
       if (error instanceof Error) {
         reply.status(401).send({ error: error.message });

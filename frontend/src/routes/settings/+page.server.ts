@@ -1,4 +1,3 @@
-// src/routes/dashboard/+page.server.ts
 import { redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 import type { Locals } from "$lib/types/locals";

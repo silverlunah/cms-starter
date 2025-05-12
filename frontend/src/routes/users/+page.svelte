@@ -2,18 +2,21 @@
   import { DATE } from "$lib/constants/common";
   import { onMount } from "svelte";
   import type { User } from "$lib/types/user";
+  import { getUsers } from "$lib/api";
   import { formatTimeAndDateUS, triggerModal } from "$lib/utils/common";
   import ModalCreateUser from "./modals/ModalCreateUser.svelte";
   import ModalUpdateUser from "./modals/ModalUpdateUser.svelte";
   import ButtonAdd from "$lib/components/buttons/ButtonAdd.svelte";
-  import DefaultAvatar from "$lib/components/user/DefaultAvatar.svelte";
+  import AvatarDefault from "$lib/components/user/AvatarDefault.svelte";
+  import AvatarHasImg from "$lib/components/user/AvatarHasImg.svelte";
   import InputSearch from "$lib/components/inputs/InputSearch.svelte";
-  import { getUsers } from "$lib/api";
   import TextBackgroundDateAndTime from "$lib/components/textbackgrounds/TextBackgroundDateAndTime.svelte";
   import TextBackgroundRole from "$lib/components/textbackgrounds/TextBackgroundRole.svelte";
-  import SectionHeading from "$lib/components/pages/SectionHeading.svelte";
+  import PageSectionHeading from "$lib/components/pages/PageSectionHeading.svelte";
   import ButtonPagination from "$lib/components/buttons/ButtonPagination.svelte";
   import PageWrapper from "$lib/components/pages/PageWrapper.svelte";
+  import IndicatorIsLocked from "$lib/components/indicators/IndicatorIsLocked.svelte";
+  import Nameplate from "$lib/components/user/Nameplate.svelte";
 
   let users: User[] = [];
   let selectedUser: User | null = null;
@@ -77,7 +80,7 @@
     <p>Loading users...</p>
   {:else}
     <div class="card w-96 md:w-3xl pixel-p p-4 text-center">
-      <SectionHeading
+      <PageSectionHeading
         title="User Management"
         description="Manage your users in this page. Create, add, disable, and delete users. You can also change or assign roles."
       />
@@ -110,47 +113,49 @@
             {#each paginatedUsers as user}
               <tr
                 onclick={() => {
-                  triggerModal("updateUserModal");
                   selectedUser = user;
+                  triggerModal("updateUserModal");
                 }}
               >
                 <!-- Status -->
                 <td class="text-center align-middle">
-                  {#if !user.isActive}
+                  <div class="flex items-center justify-center gap-3">
+                    <!-- Lock status -->
+                    {#if user.isLocked}
+                      <div
+                        class="inline-grid place-items-center *:[grid-area:1/1]"
+                      >
+                        <IndicatorIsLocked />
+                      </div>
+                    {/if}
+                    <!-- Active status -->
                     <div
                       class="inline-grid place-items-center *:[grid-area:1/1]"
                     >
                       <div
-                        class="status status-errorMessage animate-ping"
+                        class="status {user.isActive
+                          ? 'status-success'
+                          : 'status-errorMessage'} animate-ping"
                       ></div>
-                      <div class="status status-errorMessage"></div>
+                      <div
+                        class="status {user.isActive
+                          ? 'status-success'
+                          : 'status-errorMessage'}"
+                      ></div>
                     </div>
-                  {:else}
-                    <div
-                      class="inline-grid place-items-center *:[grid-area:1/1]"
-                    >
-                      <div class="status status-success animate-ping"></div>
-                      <div class="status status-success"></div>
-                    </div>
-                  {/if}
+                  </div>
                 </td>
 
                 <!-- Name -->
                 <td>
-                  <div class="flex items-center gap-3">
-                    <DefaultAvatar
-                      firstName={user.firstName}
-                      lastName={user.lastName}
-                      size="sm"
-                    />
-                    <div>
-                      <div class="font-bold text-base-content">
-                        {user.firstName}
-                        {user.lastName}
-                      </div>
-                      <div class="text-sm dark:text-gray-400">{user.email}</div>
-                    </div>
-                  </div>
+                  <!-- Avatar -->
+                  <Nameplate
+                    avatarUrl={user.avatarUrl}
+                    username={user.username}
+                    firstName={user.firstName}
+                    lastName={user.lastName}
+                    email={user.email}
+                  />
                 </td>
 
                 <!-- Role -->

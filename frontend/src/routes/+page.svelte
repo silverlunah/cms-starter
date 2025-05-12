@@ -3,6 +3,7 @@
   import { PUBLIC_API_URL } from "$env/static/public";
   import ToggleTheme from "$lib/components/toggles/ToggleTheme.svelte";
   import { isLoggedIn } from "$lib/stores/auth";
+  import { currentUser } from "$lib/stores/currentUser";
 
   let email = "";
   let password = "";
@@ -17,6 +18,9 @@
     });
 
     if (res.ok) {
+      const data = await res.json();
+      localStorage.setItem("user", JSON.stringify(data.user));
+      currentUser.set(data.user);
       isLoggedIn.set(true);
       await goto("/dashboard");
     } else {
@@ -36,7 +40,9 @@
     on:submit|preventDefault={handleLogin}
     class="max-w-sm mx-auto relative flex flex-col items-center p-4 gap-4"
   >
-    <h1 class="font-bold text-center text-7xl md:text-3xl">CMS Starter</h1>
+    <h1 class="font-bold text-center text-7xl md:text-4xl">
+      CMS Starter
+    </h1>
     <h2 class="font-bold text-center text-4xl md:text-xl">Login</h2>
 
     <div class="items-center">
@@ -56,7 +62,7 @@
         on:keydown={handleKeyDown}
       />
       <button type="submit" class="btn btn-primary w-full"
-        >Let's Go!</button
+        >Submit</button
       >
 
       {#if error}

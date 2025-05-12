@@ -14,6 +14,7 @@
       "data-theme",
       value ? "dark" : "light",
     );
+    console.log(value ? "dark" : "light");
   }
 
   /**-----------------------
@@ -31,7 +32,7 @@
     <!-- this hidden checkbox controls the state -->
     <input
       type="checkbox"
-      value="synthwave"
+      value={isDark ? "dark" : "light"}
       class="theme-controller"
       on:change={() => setTheme(!isDark)}
       bind:checked={isDark}

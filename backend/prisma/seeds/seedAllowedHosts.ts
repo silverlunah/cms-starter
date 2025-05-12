@@ -14,10 +14,12 @@ export async function seedAllowedHosts() {
     update: {
       url: host,
       displayName: "Your Current URL",
+      isLocked: true,
     },
     create: {
       url: host,
       displayName: "Your Current URL",
+      isLocked: true,
     },
   });
 
