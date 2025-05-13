@@ -1,6 +1,6 @@
-# Silverlunah Backoffice
+# CMS Starter
 
-Backoffice for silverlunah.com.
+Startup your website's CMS easily! Includes basic auth using JWT & cookies, CRUD for users, and a setting to add/remove allowed hosts to link your websites.
 
 ### Pre-requisite
 
@@ -9,7 +9,7 @@ Backoffice for silverlunah.com.
 ### Pull the project
 
 ```bash
-git clone https://github.com/silverlunah/silverlunah-backoffice.git
+git clone https://github.com/silverlunah/cms-starter.git
 ```
 
 ## Development (Local)
