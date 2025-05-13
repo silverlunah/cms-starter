@@ -16,6 +16,7 @@
   import IndicatorIsLocked from "$lib/components/indicators/IndicatorIsLocked.svelte";
   import Nameplate from "$lib/components/user/Nameplate.svelte";
   import PageSection from "$lib/components/pages/PageSection.svelte";
+  import LoadingIndicatorPage from "$lib/components/loading/LoadingIndicatorPage.svelte";
 
   let users: User[] = [];
   let selectedUser: User | null = null;
@@ -76,7 +77,7 @@
   {#if errorMessage}
     <p class="text-red-500">{errorMessage}</p>
   {:else if users.length === 0}
-    <p>Loading users...</p>
+    <LoadingIndicatorPage />
   {:else}
     <PageSectionHeading
       title="User Management"

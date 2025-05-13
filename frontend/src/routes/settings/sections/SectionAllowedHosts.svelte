@@ -25,6 +25,7 @@
   import InputFormField from "$lib/components/inputs/InputFormField.svelte";
   import Modal from "$lib/components/modals/Modal.svelte";
   import PageSection from "$lib/components/pages/PageSection.svelte";
+  import LoadingIndicatorPage from "$lib/components/loading/LoadingIndicatorPage.svelte";
 
   let error: string | null = null;
   let allowedHosts: AllowedHost[] = [];
@@ -271,7 +272,7 @@
 {#if error}
   <p class="text-red-500">{error}</p>
 {:else if allowedHosts.length === 0}
-  <p>Loading Allowed Hosts Section...</p>
+  <LoadingIndicatorPage />
 {:else}
   <PageSectionHeading
     title="Allowed Hosts"
