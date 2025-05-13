@@ -20,6 +20,7 @@
   import { currentUser } from "$lib/stores/currentUser";
   import type { CurrentUser } from "$lib/types/currentUser";
   import InputFormField from "$lib/components/inputs/InputFormField.svelte";
+  import { updateUserSchema } from "$lib/zschemas/updateUserSchema";
 
   export let selectedUser: User | null = null;
   export let listenRefreshUser: () => void;
@@ -43,44 +44,6 @@
   let role = 0;
 
   let fieldErrors: Record<string, string> = {};
-
-  /**-----------------------
-   *      Zod Schema
-   -----------------------*/
-  const userSchema = z
-    .object({
-      firstName: z.string().min(1, { message: "First name is required" }),
-      lastName: z.string().min(1, { message: "Last name is required" }),
-      username: z
-        .string()
-        .min(6, { message: "Username must be atleast 6 characters" }),
-      address: z.string().optional(),
-      occupation: z.string().optional(),
-      organization: z.string().optional(),
-      email: z.string().email({ message: "Invalid email format" }),
-      password: z
-        .string()
-        .optional()
-        .refine((val) => !val || val.length >= 6, {
-          message: "Password must be at least 6 characters",
-        }),
-      confirmPassword: z
-        .string()
-        .optional()
-        .refine((val) => !val || val.length >= 6, {
-          message: "Password must be at least 6 characters",
-        }),
-    })
-    .refine(
-      (data) => {
-        if (!data.password && !data.confirmPassword) return true;
-        return data.password === data.confirmPassword;
-      },
-      {
-        path: ["confirmPassword"],
-        message: "Passwords do not match",
-      },
-    );
 
   /**-----------------------
    *  Reactive Statements
@@ -142,7 +105,7 @@
       confirmPassword,
     };
 
-    const result = userSchema.safeParse(input);
+    const result = updateUserSchema.safeParse(input);
 
     if (!result.success) {
       fieldErrors = result.error.errors.reduce(

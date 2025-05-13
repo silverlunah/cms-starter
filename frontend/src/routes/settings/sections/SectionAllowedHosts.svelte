@@ -26,6 +26,8 @@
   import Modal from "$lib/components/modals/Modal.svelte";
   import PageSection from "$lib/components/pages/PageSection.svelte";
   import LoadingIndicatorPage from "$lib/components/loading/LoadingIndicatorPage.svelte";
+  import { createAllowedHostSchema } from "$lib/zschemas/createAllowedHostSchema";
+  import { updateAllowedHostSchema } from "$lib/zschemas/updateAllowedHostSchema";
 
   let error: string | null = null;
   let allowedHosts: AllowedHost[] = [];
@@ -44,23 +46,6 @@
   let editingDisplayNameId: string | null = null;
   let editingUrlId: string | null = null;
   let editedValue = "";
-
-  /**-----------------------
-   *      Zod Schema
-   -----------------------*/
-  const allowedHostSchemaCreate = z.object({
-    createDisplayName: z.string().min(1, "Display name is required"),
-    createUrl: z
-      .string()
-      .url("URL is invalid. Make sure to include http:// or https://"),
-  });
-
-  const allowedHostSchemaUpdate = z.object({
-    updateDisplayName: z.string().min(1, "Display name is required"),
-    updateUrl: z
-      .string()
-      .url("URL is invalid. Make sure to include http:// or https://"),
-  });
 
   /**-----------------------
    *   Users Pagination
@@ -145,7 +130,7 @@
       return;
     }
 
-    const validation = allowedHostSchemaCreate.safeParse({
+    const validation = createAllowedHostSchema.safeParse({
       createUrl,
       createDisplayName,
     });
@@ -205,7 +190,7 @@
     if (!validateUniqueUrl(updateUrl, id)) return;
 
     // Zod schema validation
-    const validation = allowedHostSchemaUpdate.safeParse({
+    const validation = updateAllowedHostSchema.safeParse({
       updateDisplayName,
       updateUrl,
     });
