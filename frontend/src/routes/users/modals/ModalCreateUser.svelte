@@ -181,102 +181,90 @@
       <AvatarDefault {firstName} {lastName} size="md" />
     </div>
     <div class="flex gap-4">
-      <fieldset class="fieldset w-1/2">
-        <InputFormField
-          bind:value={firstName}
-          type="text"
-          label="First Name"
-          placeholder="First Name"
-          additionalClass="w-full"
-          fieldError={fieldErrors.firstName}
-        />
-      </fieldset>
-      <fieldset class="fieldset w-1/2">
-        <InputFormField
-          bind:value={lastName}
-          type="text"
-          label="Last Name"
-          placeholder="Last Name"
-          additionalClass="w-full"
-          fieldError={fieldErrors.lastName}
-        />
-      </fieldset>
+      <InputFormField
+        bind:value={firstName}
+        type="text"
+        label="First Name"
+        placeholder="First Name"
+        fieldSetAdditionalClass="w-1/2"
+        inputAdditionalClass="w-full"
+        fieldError={fieldErrors.firstName}
+      />
+      <InputFormField
+        bind:value={lastName}
+        type="text"
+        label="Last Name"
+        placeholder="Last Name"
+        fieldSetAdditionalClass="w-1/2"
+        inputAdditionalClass="w-full"
+        fieldError={fieldErrors.lastName}
+      />
     </div>
-    <fieldset class="fieldset">
-      <InputFormField
-        bind:value={username}
-        type="text"
-        label="Username"
-        placeholder="Username"
-        additionalClass="w-full"
-        fieldError={fieldErrors.username}
-      />
-    </fieldset>
-    <fieldset class="fieldset">
-      <InputFormField
-        bind:value={email}
-        type="text"
-        label="Email"
-        placeholder="Email"
-        additionalClass="w-full"
-        fieldError={fieldErrors.email}
-      />
-    </fieldset>
-    <fieldset class="fieldset">
-      <InputFormField
-        bind:value={address}
-        type="text"
-        label="Address"
-        placeholder="Address"
-        additionalClass="w-full"
-        fieldError={fieldErrors.address}
-      />
-    </fieldset>
+    <InputFormField
+      bind:value={username}
+      type="text"
+      label="Username"
+      placeholder="Username"
+      inputAdditionalClass="w-full"
+      fieldError={fieldErrors.username}
+    />
+    <InputFormField
+      bind:value={email}
+      type="text"
+      label="Email"
+      placeholder="Email"
+      inputAdditionalClass="w-full"
+      fieldError={fieldErrors.email}
+    />
+    <InputFormField
+      bind:value={address}
+      type="text"
+      label="Address"
+      placeholder="Address"
+      inputAdditionalClass="w-full"
+      fieldError={fieldErrors.address}
+    />
     <div class="flex gap-4">
-      <fieldset class="fieldset w-1/2">
-        <InputFormField
-          bind:value={occupation}
-          type="text"
-          label="Occupation"
-          placeholder="Occupation"
-          additionalClass="w-full"
-          fieldError={fieldErrors.occupation}
-        />
-      </fieldset>
-      <fieldset class="fieldset w-1/2">
-        <InputFormField
-          bind:value={organization}
-          type="text"
-          label="Organization"
-          placeholder="Organization"
-          additionalClass="w-full"
-          fieldError={fieldErrors.organization}
-        />
-      </fieldset>
+      <InputFormField
+        bind:value={occupation}
+        type="text"
+        label="Occupation"
+        placeholder="Occupation"
+        fieldSetAdditionalClass="w-1/2"
+        inputAdditionalClass="w-full"
+        fieldError={fieldErrors.occupation}
+      />
+      <InputFormField
+        bind:value={organization}
+        type="text"
+        label="Organization"
+        placeholder="Organization"
+        fieldSetAdditionalClass="w-1/2"
+        inputAdditionalClass="w-full"
+        fieldError={fieldErrors.organization}
+      />
     </div>
   </ModalSection>
   <ModalSection label="Password">
     <div class="flex gap-4">
-      <fieldset class="fieldset w-1/2">
-        <InputFormField
-          bind:value={password}
-          type="password"
-          label="Password"
-          placeholder="Password"
-          additionalClass="w-full"
-          fieldError={fieldErrors.password}
-        />
-      </fieldset>
-      <fieldset class="fieldset w-1/2">
-        <InputFormField
-          bind:value={confirmPassword}
-          type="password"
-          label="Confirm Password"
-          placeholder="Confirm Password"
-          additionalClass="w-full"
-          fieldError={fieldErrors.confirmPassword}
-        />
-      </fieldset>
+      <InputFormField
+        bind:value={password}
+        type="password"
+        label="Password"
+        placeholder="Password"
+        fieldSetAdditionalClass="w-1/2"
+        inputAdditionalClass="w-full"
+        fieldError={fieldErrors.password}
+      />
+      <InputFormField
+        bind:value={confirmPassword}
+        type="password"
+        label="Confirm Password"
+        placeholder="Confirm Password"
+        fieldSetAdditionalClass="w-1/2"
+        inputAdditionalClass="w-full"
+        fieldError={fieldErrors.confirmPassword}
+      />
     </div>
   </ModalSection>
 

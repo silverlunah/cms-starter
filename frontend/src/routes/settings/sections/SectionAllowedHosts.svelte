@@ -22,12 +22,14 @@
   import PageSectionHeading from "$lib/components/pages/PageSectionHeading.svelte";
   import ButtonPagination from "$lib/components/buttons/ButtonPagination.svelte";
   import { triggerNotification } from "$lib/utils/notification";
+  import InputFormField from "$lib/components/inputs/InputFormField.svelte";
+  import Modal from "$lib/components/modals/Modal.svelte";
 
   let error: string | null = null;
   let allowedHosts: AllowedHost[] = [];
   let selectedAllowedHost: AllowedHost | null = null;
 
-  let fieldErrors: { [key: string]: string } = {}; // Store errors for each field
+  let fieldErrors: { [key: string]: string } = {};
 
   let createDisplayName = "";
   let createUrl = "";
@@ -298,32 +300,26 @@
               <!-- New Row Input Fields -->
               <tr>
                 <td class="text-left">
-                  <input
+                  <InputFormField
                     bind:value={createDisplayName}
-                    class="input min-w-44 {fieldErrors.createDisplayName
-                      ? 'input-error'
-                      : ''}"
+                    type="text"
+                    label="Display Name"
                     placeholder="Display Name"
+                    fieldSetAdditionalClass="min-w-44 w-1/2"
+                    inputAdditionalClass="w-full"
+                    fieldError={fieldErrors.createDisplayName}
                   />
-                  {#if fieldErrors.createDisplayName}
-                    <p class="label text-error">
-                      {fieldErrors.createDisplayName}
-                    </p>
-                  {/if}
                 </td>
                 <td class="text-left">
-                  <input
+                  <InputFormField
                     bind:value={createUrl}
-                    class="input min-w-44 {fieldErrors.createUrl
-                      ? 'input-error'
-                      : ''}"
+                    type="text"
+                    label="URL"
                     placeholder="URL"
+                    fieldSetAdditionalClass="min-w-44 w-1/2"
+                    inputAdditionalClass="w-full"
+                    fieldError={fieldErrors.createUrl}
                   />
-                  {#if fieldErrors.createUrl}
-                    <p class="label text-error">
-                      {fieldErrors.createUrl}
-                    </p>
-                  {/if}
                 </td>
                 <td class="text-left">
                   <div class="flex justify-between gap-2">
@@ -479,30 +475,27 @@
   </div>
 {/if}
 
-<dialog id="confirmDeleteAllowedHostModal" class="modal">
-  <div class="modal-box max-w-96 max-h-3/4">
-    <div class="flex flex-col gap-6">
-      <h3 class="font-bold text-lg text-center">Confirm Deletion</h3>
-      <p class="text-center">
-        Are you sure you want to delete <strong
-          >{selectedAllowedHost?.url}</strong
-        >?
-        <br /><br />This action
-        <span class="text-red-500 font-semibold">cannot be undone</span>.
-      </p>
-      <div class="modal-action justify-center">
-        <ButtonDelete
-          label="Yes, Delete"
-          onclick={() => {
-            handleDeleteAllowedHost();
-            closeModal("confirmDeleteAllowedHostModal");
-          }}
-        />
-        <ButtonClose
-          label="No"
-          onclick={() => closeModal("confirmDeleteAllowedHostModal")}
-        />
-      </div>
-    </div>
+<Modal
+  id="confirmDeleteAllowedHostModal"
+  label="Confirm Delete"
+  additionalClass="modal-box max-w-96 max-h-3/4"
+>
+  <p class="text-center">
+    Are you sure you want to delete <strong>{selectedAllowedHost?.url}</strong>?
+    <br /><br />This action
+    <span class="text-red-500 font-semibold">cannot be undone</span>.
+  </p>
+  <div class="modal-action justify-center">
+    <ButtonDelete
+      label="Yes, Delete"
+      onclick={() => {
+        handleDeleteAllowedHost();
+        closeModal("confirmDeleteAllowedHostModal");
+      }}
+    />
+    <ButtonClose
+      label="No"
+      onclick={() => closeModal("confirmDeleteAllowedHostModal")}
+    />
   </div>
-</dialog>
+</Modal>
