@@ -12,7 +12,12 @@
     "local:up": "concurrently \"npm run local:backend:up\" \"npm run local:frontend:up\"",
     "local:generate:env": "node scripts/generate-env.js",
     "prisma:update:tables": "node scripts/prisma-update-tables.js",
-    "prisma:migrate:reset": "node scripts/prisma-migrate-reset.js"
+    "prisma:migrate:reset": "node scripts/prisma-migrate-reset.js",
+    "prepare": "husky install"
+  },
+  "lint-staged": {
+    "backend/src/**/*.{ts,js}": "npm run --prefix backend format",
+    "frontend/src/**/*.{ts,js,svelte}": "npm run --prefix frontend format"
   },
   "keywords": [],
   "author": "silverlunah",
@@ -20,5 +25,9 @@
   "description": "Starter code for your website's content management system. Uses Fastify for backend and SvelteKit for frontend. Includes basic auth (JWT/cookies), CRUD for users table, and domain management to link your own website to the API.",
   "dependencies": {
     "concurrently": "^9.1.2"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.0.0"
   }
 }

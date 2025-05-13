@@ -6,6 +6,7 @@
     "build": "tsc",
     "start": "node build/index.js",
     "dev": "prisma generate && npx prisma db seed && npx prisma migrate deploy && ts-node-dev --respawn --transpile-only src/index.ts",
+    "format": "prettier --write \"src/**/*.{ts,js,json,md}\"",
     "prisma:seed": "npx ts-node prisma/seed.ts"
   },
   "prisma": {
@@ -29,6 +30,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.15.17",
+    "prettier": "^3.5.3",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.0.0"
   }
