@@ -41,7 +41,8 @@ model allowed_hosts {
 
 model images {
   id          String    @id @default(uuid()) @db.Char(36)
-  userId      String 
+  userId      String
+  postId      String?   
   url         String    @unique
   type        String
   isActive    Boolean   @default(true)

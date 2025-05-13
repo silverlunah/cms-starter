@@ -19,7 +19,7 @@ export async function allowedHostsRoutes(fastify: FastifyInstance) {
         console.error("Failed to fetch allowed hosts:", error);
         reply.status(500).send({ error: "Unable to retrieve allowed hosts" });
       }
-    }
+    },
   );
 
   fastify.post(
@@ -57,7 +57,7 @@ export async function allowedHostsRoutes(fastify: FastifyInstance) {
           reply.status(500).send({ error: "An unexpected error occurred" });
         }
       }
-    }
+    },
   );
 
   fastify.put(
@@ -107,7 +107,7 @@ export async function allowedHostsRoutes(fastify: FastifyInstance) {
           reply.status(500).send({ error: "An unexpected error occurred" });
         }
       }
-    }
+    },
   );
 
   fastify.delete(
@@ -135,6 +135,6 @@ export async function allowedHostsRoutes(fastify: FastifyInstance) {
           reply.status(500).send({ error: "An unexpected error occurred" });
         }
       }
-    }
+    },
   );
 }

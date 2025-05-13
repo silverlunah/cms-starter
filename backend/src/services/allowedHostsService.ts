@@ -38,7 +38,7 @@ export async function updateAllowedHost(
   data: {
     url: string;
     displayName: string;
-  }
+  },
 ) {
   const updateData: any = {
     url: data.url,

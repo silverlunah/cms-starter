@@ -79,7 +79,7 @@ export async function usersRoutes(fastify: FastifyInstance) {
           role,
           address,
           occupation,
-          organization
+          organization,
         );
         reply
           .code(201)
@@ -91,7 +91,7 @@ export async function usersRoutes(fastify: FastifyInstance) {
           reply.status(500).send({ error: "An unexpected error occurred" });
         }
       }
-    }
+    },
   );
 
   fastify.put(
@@ -178,7 +178,7 @@ export async function usersRoutes(fastify: FastifyInstance) {
           reply.status(500).send({ error: "An unexpected error occurred" });
         }
       }
-    }
+    },
   );
 
   fastify.post(
@@ -209,7 +209,7 @@ export async function usersRoutes(fastify: FastifyInstance) {
           reply.status(500).send({ error: "An unexpected error occurred" });
         }
       }
-    }
+    },
   );
 
   fastify.delete(
@@ -237,6 +237,6 @@ export async function usersRoutes(fastify: FastifyInstance) {
           reply.status(500).send({ error: "An unexpected error occurred" });
         }
       }
-    }
+    },
   );
 }

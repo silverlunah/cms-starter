@@ -45,7 +45,7 @@ export async function createUser(
   role: number,
   address?: string,
   occupation?: string,
-  organization?: string
+  organization?: string,
 ) {
   const existingEmail = await prisma.users.findUnique({ where: { email } });
   if (existingEmail) {
@@ -91,7 +91,7 @@ export async function updateUser(
     address?: string;
     occupation?: string;
     organization?: string;
-  }
+  },
 ) {
   // Check if the email is used by another user
   const existingEmail = await prisma.users.findUnique({

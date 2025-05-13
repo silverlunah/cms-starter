@@ -7,12 +7,12 @@ export async function seedUsers() {
   const password = await bcrypt.hash("test", 10);
 
   await prisma.users.upsert({
-    where: { id: "893d7514-8686-4815-b652-a9c8b81544g6" },
+    where: { id: "893d7514-8687-4815-b922-a9c8b81540c2" },
     update: {
       email: "admin@admin.com",
       firstName: "CMS",
       lastName: "Admin",
-      username: "cmsadmin",
+      username: "CMSAdmin",
       password,
       role: 99,
       isActive: true,
@@ -20,15 +20,15 @@ export async function seedUsers() {
       updatedAt: new Date(),
     },
     create: {
-      id: "893d7514-8686-4815-b652-a9c8b81544g6",
+      id: "893d7514-8687-4815-b922-a9c8b81540c2",
       email: "admin@admin.com",
-      firstName: "CMS",
+      firstName: "CMS ",
       lastName: "Admin",
-      username: "cmsadmin",
-      imgId: "893d7514-8686-4815-b652-a9c8b81544g7",
-      occupation: "",
-      organization: "",
-      address: "",
+      username: "CMSAdmin",
+      imgId: "893d7514-8688-4815-b922-a9c8b81540c3",
+      occupation: "Occupation",
+      organization: "Organization",
+      address: "Address",
       password,
       role: 99,
       isActive: true,

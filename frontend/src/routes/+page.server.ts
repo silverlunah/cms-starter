@@ -9,7 +9,7 @@ export const load: PageServerLoad = async ({ cookies }) => {
     const payload = await verifyJWT(token);
 
     if (payload) {
-      throw redirect(302, "/dashboard");
+      throw redirect(302, "/profile");
     }
   }
 

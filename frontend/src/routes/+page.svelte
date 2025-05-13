@@ -22,7 +22,7 @@
       localStorage.setItem("user", JSON.stringify(data.user));
       currentUser.set(data.user);
       isLoggedIn.set(true);
-      await goto("/dashboard");
+      await goto("/profile");
     } else {
       error = "Invalid credentials";
     }
@@ -59,7 +59,7 @@
         class="input input-bordered w-full mb-4"
         on:keydown={handleKeyDown}
       />
-      <button type="submit" class="btn btn-primary w-full">Submit</button>
+      <button type="submit" class="btn btn-primary w-full">Let's Go!</button>
 
       {#if error}
         <p class="mt-4 text-error text-sm text-center">{error}</p>

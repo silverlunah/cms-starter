@@ -39,6 +39,7 @@ CREATE TABLE `allowed_hosts` (
 CREATE TABLE `images` (
     `id` CHAR(36) NOT NULL,
     `userId` VARCHAR(191) NOT NULL,
+    `postId` VARCHAR(191) NULL,
     `url` VARCHAR(191) NOT NULL,
     `type` VARCHAR(191) NOT NULL,
     `isActive` BOOLEAN NOT NULL DEFAULT true,

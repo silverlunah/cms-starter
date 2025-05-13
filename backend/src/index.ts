@@ -1,6 +1,11 @@
 import Fastify from "fastify";
 import fastifyCors from "@fastify/cors";
-import { allowedHostsRoutes, authRoutes, usersRoutes } from "./routes/index";
+import {
+  allowedHostsRoutes,
+  authRoutes,
+  developerProfileRoutes,
+  usersRoutes,
+} from "./routes/index";
 import fastifyCookie from "@fastify/cookie";
 import fastifyJWT from "@fastify/jwt";
 import fastifyCsrfProtection from "@fastify/csrf-protection";
@@ -39,6 +44,7 @@ const setupCors = async () => {
 fastify.register(authRoutes);
 fastify.register(usersRoutes);
 fastify.register(allowedHostsRoutes);
+fastify.register(developerProfileRoutes);
 
 /**-----------------------
  *    JWT configuration  

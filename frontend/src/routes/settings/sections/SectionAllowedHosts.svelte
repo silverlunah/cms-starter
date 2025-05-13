@@ -24,6 +24,7 @@
   import { triggerNotification } from "$lib/utils/notification";
   import InputFormField from "$lib/components/inputs/InputFormField.svelte";
   import Modal from "$lib/components/modals/Modal.svelte";
+  import PageSection from "$lib/components/pages/PageSection.svelte";
 
   let error: string | null = null;
   let allowedHosts: AllowedHost[] = [];
@@ -168,8 +169,8 @@
     }
 
     fieldErrors.url = "";
-    updateDisplayName = "";
-    updateUrl = "";
+    createDisplayName = "";
+    createUrl = "";
     listenRefreshAllowedHosts();
     isAddingNewHost = false;
   }
@@ -277,196 +278,200 @@
     description="If you have multiple websites that would utilize the CMS, you need
           to add each URL here to start making API calls."
   />
-  <ButtonAdd
-    onclick={() => (isAddingNewHost = !isAddingNewHost)}
-    additionalClass="mr-auto"
-    label="New"
-  />
-  <div class="overflow-x-auto max-h-[400px] overflow-y-auto w-full">
-    <table class="table min-w-[800px] mt-4">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>URL</th>
-          <th>Action</th>
-          <th>Date Created</th>
-          <th>Last Updated</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#if isAddingNewHost}
-          <!-- New Row Input Fields -->
-          <tr>
-            <td class="text-left">
-              <InputFormField
-                bind:value={createDisplayName}
-                type="text"
-                label="Display Name"
-                placeholder="Display Name"
-                fieldSetAdditionalClass="min-w-44 w-1/2"
-                inputAdditionalClass="w-full"
-                fieldError={fieldErrors.createDisplayName}
-              />
-            </td>
-            <td class="text-left">
-              <InputFormField
-                bind:value={createUrl}
-                type="text"
-                label="URL"
-                placeholder="URL"
-                fieldSetAdditionalClass="min-w-44 w-1/2"
-                inputAdditionalClass="w-full"
-                fieldError={fieldErrors.createUrl}
-              />
-            </td>
-            <td class="text-left">
-              <div class="flex justify-between gap-2">
-                <ButtonSave
-                  label=""
-                  onclick={() => handleCreateAllowedHost()}
-                />
-                <ButtonClose
-                  label=""
-                  onclick={() => {
-                    updateDisplayName = "";
-                    updateUrl = "";
-                    isAddingNewHost = false;
-                  }}
-                />
-              </div>
-            </td>
-            <td class="text-left"></td>
-            <td class="text-left"></td>
-          </tr>
-        {/if}
-        {#each paginatedAllowedHosts as allowedHost}
-          <tr
-            class={normalizeUrl(allowedHost.url) ===
-            normalizeUrl(window.location.origin)
-              ? "opacity-50 pointer-events-none"
-              : ""}
-          >
-            <!-- Display Name -->
-            <td class="text-left">
-              {#if editingDisplayNameId === allowedHost.id && normalizeUrl(allowedHost.url) !== normalizeUrl(window.location.origin)}
-                <input
-                  bind:value={editedValue}
-                  class="input min-w-44 {fieldErrors.updateDisplayName
-                    ? 'input-error'
-                    : ''}"
-                  on:blur={(e) =>
-                    handleKeyOrBlur(e, allowedHost.id, "displayName")}
-                  on:keydown={(e) =>
-                    handleKeyOrBlur(e, allowedHost.id, "displayName")}
-                  autofocus
-                />
-                {#if fieldErrors.updateDisplayName}
-                  <p class="label text-error">
-                    {fieldErrors.updateDisplayName}
-                  </p>
-                {/if}
-              {:else}
-                <!-- svelte-ignore a11y_click_events_have_key_events -->
-                <!-- svelte-ignore a11y_no_static_element_interactions -->
-                <!-- svelte-ignore a11y_missing_attribute -->
-                <a
-                  class="flex items-center justify-between gap-2 text-blue-500 {normalizeUrl(
-                    allowedHost.url,
-                  ) === normalizeUrl(window.location.origin)
-                    ? 'cursor-not-allowed text-gray-400'
-                    : 'cursor-pointer'}"
-                  on:click={normalizeUrl(allowedHost.url) !==
-                  normalizeUrl(window.location.origin)
-                    ? () =>
-                        startEditing(
-                          allowedHost.id,
-                          allowedHost.displayName,
-                          "displayName",
-                        )
-                    : null}
-                >
-                  <p class="whitespace-nowrap">
-                    {allowedHost.displayName}
-                  </p>
-                </a>
-              {/if}
-            </td>
-
-            <!-- URL -->
-            <td class="text-left">
-              {#if editingUrlId === allowedHost.id && normalizeUrl(allowedHost.url) !== normalizeUrl(window.location.origin)}
-                <input
-                  bind:value={editedValue}
-                  class="input min-w-44 {fieldErrors.updateUrl
-                    ? 'input-error'
-                    : ''}"
-                  on:blur={(e) => handleKeyOrBlur(e, allowedHost.id, "url")}
-                  on:keydown={(e) => handleKeyOrBlur(e, allowedHost.id, "url")}
-                  autofocus
-                />
-                {#if fieldErrors.updateUrl}
-                  <p class="label text-error">
-                    {fieldErrors.updateUrl}
-                  </p>
-                {/if}
-              {:else}
-                <!-- svelte-ignore a11y_click_events_have_key_events -->
-                <!-- svelte-ignore a11y_no_static_element_interactions -->
-                <!-- svelte-ignore a11y_missing_attribute -->
-                <a
-                  class="flex items-center justify-between gap-2 text-blue-500 {normalizeUrl(
-                    allowedHost.url,
-                  ) === normalizeUrl(window.location.origin)
-                    ? 'cursor-not-allowed text-gray-400'
-                    : 'cursor-pointer'}"
-                  on:click={normalizeUrl(allowedHost.url) !==
-                  normalizeUrl(window.location.origin)
-                    ? () => startEditing(allowedHost.id, allowedHost.url, "url")
-                    : null}
-                >
-                  <p class="whitespace-nowrap">{allowedHost.url}</p>
-                </a>
-              {/if}
-            </td>
-
-            <!-- Actions -->
-            <td class="text-left">
-              <ButtonDelete
-                label="Delete"
-                additionalClass={normalizeUrl(allowedHost.url) ===
+  <PageSection>
+    <ButtonAdd
+      onclick={() => (isAddingNewHost = !isAddingNewHost)}
+      additionalClass="mr-auto"
+      label="New"
+    />
+    <div class="flex flex-col">
+      <div class="overflow-x-auto w-full">
+        <table class="table min-w-[800px] mt-4">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>URL</th>
+              <th>Action</th>
+              <th>Date Created</th>
+              <th>Last Updated</th>
+            </tr>
+          </thead>
+          <tbody>
+            {#if isAddingNewHost}
+              <!-- New Row Input Fields -->
+              <tr>
+                <td class="text-left">
+                  <InputFormField
+                    bind:value={createDisplayName}
+                    type="text"
+                    placeholder="Display Name"
+                    fieldSetAdditionalClass="min-w-44 w-1/2"
+                    inputAdditionalClass="w-full"
+                    fieldError={fieldErrors.createDisplayName}
+                  />
+                </td>
+                <td class="text-left">
+                  <InputFormField
+                    bind:value={createUrl}
+                    type="text"
+                    placeholder="URL"
+                    fieldSetAdditionalClass="min-w-44 w-1/2"
+                    inputAdditionalClass="w-full"
+                    fieldError={fieldErrors.createUrl}
+                  />
+                </td>
+                <td class="text-left">
+                  <div class="flex justify-between gap-2">
+                    <ButtonSave
+                      label=""
+                      onclick={() => handleCreateAllowedHost()}
+                    />
+                    <ButtonClose
+                      label=""
+                      onclick={() => {
+                        updateDisplayName = "";
+                        updateUrl = "";
+                        isAddingNewHost = false;
+                      }}
+                    />
+                  </div>
+                </td>
+                <td class="text-left"></td>
+                <td class="text-left"></td>
+              </tr>
+            {/if}
+            {#each paginatedAllowedHosts as allowedHost}
+              <tr
+                class={normalizeUrl(allowedHost.url) ===
                 normalizeUrl(window.location.origin)
-                  ? "btn-disabled"
+                  ? "opacity-50 pointer-events-none"
                   : ""}
-                disabled={normalizeUrl(allowedHost.url) ===
-                  normalizeUrl(window.location.origin)}
-                onclick={() => {
-                  normalizeUrl(allowedHost.url) !==
-                    normalizeUrl(window.location.origin);
-                  selectedAllowedHost = allowedHost;
-                  triggerModal("confirmDeleteAllowedHostModal");
-                }}
-              />
-            </td>
+              >
+                <!-- Display Name -->
+                <td class="text-left">
+                  {#if editingDisplayNameId === allowedHost.id && normalizeUrl(allowedHost.url) !== normalizeUrl(window.location.origin)}
+                    <input
+                      bind:value={editedValue}
+                      class="input min-w-44 {fieldErrors.updateDisplayName
+                        ? 'input-error'
+                        : ''}"
+                      on:blur={(e) =>
+                        handleKeyOrBlur(e, allowedHost.id, "displayName")}
+                      on:keydown={(e) =>
+                        handleKeyOrBlur(e, allowedHost.id, "displayName")}
+                      autofocus
+                    />
+                    {#if fieldErrors.updateDisplayName}
+                      <p class="label text-error">
+                        {fieldErrors.updateDisplayName}
+                      </p>
+                    {/if}
+                  {:else}
+                    <!-- svelte-ignore a11y_click_events_have_key_events -->
+                    <!-- svelte-ignore a11y_no_static_element_interactions -->
+                    <!-- svelte-ignore a11y_missing_attribute -->
+                    <a
+                      class="flex items-center justify-between gap-2 text-blue-500 {normalizeUrl(
+                        allowedHost.url,
+                      ) === normalizeUrl(window.location.origin)
+                        ? 'cursor-not-allowed text-gray-400'
+                        : 'cursor-pointer'}"
+                      on:click={normalizeUrl(allowedHost.url) !==
+                      normalizeUrl(window.location.origin)
+                        ? () =>
+                            startEditing(
+                              allowedHost.id,
+                              allowedHost.displayName,
+                              "displayName",
+                            )
+                        : null}
+                    >
+                      <p class="whitespace-nowrap">
+                        {allowedHost.displayName}
+                      </p>
+                    </a>
+                  {/if}
+                </td>
 
-            <!-- Created At -->
-            <td class="text-left">
-              <TextBackgroundDateAndTime
-                label={formatTimeAndDateUS(allowedHost.createdAt)}
-              />
-            </td>
+                <!-- URL -->
+                <td class="text-left">
+                  {#if editingUrlId === allowedHost.id && normalizeUrl(allowedHost.url) !== normalizeUrl(window.location.origin)}
+                    <input
+                      bind:value={editedValue}
+                      class="input min-w-44 {fieldErrors.updateUrl
+                        ? 'input-error'
+                        : ''}"
+                      on:blur={(e) => handleKeyOrBlur(e, allowedHost.id, "url")}
+                      on:keydown={(e) =>
+                        handleKeyOrBlur(e, allowedHost.id, "url")}
+                      autofocus
+                    />
+                    {#if fieldErrors.updateUrl}
+                      <p class="label text-error">
+                        {fieldErrors.updateUrl}
+                      </p>
+                    {/if}
+                  {:else}
+                    <!-- svelte-ignore a11y_click_events_have_key_events -->
+                    <!-- svelte-ignore a11y_no_static_element_interactions -->
+                    <!-- svelte-ignore a11y_missing_attribute -->
+                    <a
+                      class="flex items-center justify-between gap-2 text-blue-500 {normalizeUrl(
+                        allowedHost.url,
+                      ) === normalizeUrl(window.location.origin)
+                        ? 'cursor-not-allowed text-gray-400'
+                        : 'cursor-pointer'}"
+                      on:click={normalizeUrl(allowedHost.url) !==
+                      normalizeUrl(window.location.origin)
+                        ? () =>
+                            startEditing(allowedHost.id, allowedHost.url, "url")
+                        : null}
+                    >
+                      <p class="whitespace-nowrap">{allowedHost.url}</p>
+                    </a>
+                  {/if}
+                </td>
 
-            <!-- Updated At -->
-            <td class="text-left">
-              <TextBackgroundDateAndTime
-                label={formatTimeAndDateUS(allowedHost.updatedAt)}
-              />
-            </td>
-          </tr>
-        {/each}
-      </tbody>
-    </table>
-  </div>
-  <ButtonPagination {totalPages} {currentPage} {goToPage} />
+                <!-- Actions -->
+                <td class="text-left">
+                  <ButtonDelete
+                    label="Delete"
+                    additionalClass={normalizeUrl(allowedHost.url) ===
+                    normalizeUrl(window.location.origin)
+                      ? "btn-disabled"
+                      : ""}
+                    disabled={normalizeUrl(allowedHost.url) ===
+                      normalizeUrl(window.location.origin)}
+                    onclick={() => {
+                      normalizeUrl(allowedHost.url) !==
+                        normalizeUrl(window.location.origin);
+                      selectedAllowedHost = allowedHost;
+                      triggerModal("confirmDeleteAllowedHostModal");
+                    }}
+                  />
+                </td>
+
+                <!-- Created At -->
+                <td class="text-left">
+                  <TextBackgroundDateAndTime
+                    label={formatTimeAndDateUS(allowedHost.createdAt)}
+                  />
+                </td>
+
+                <!-- Updated At -->
+                <td class="text-left">
+                  <TextBackgroundDateAndTime
+                    label={formatTimeAndDateUS(allowedHost.updatedAt)}
+                  />
+                </td>
+              </tr>
+            {/each}
+          </tbody>
+        </table>
+      </div>
+      <ButtonPagination {totalPages} {currentPage} {goToPage} />
+    </div>
+  </PageSection>
 {/if}
 
 <Modal

@@ -14,7 +14,6 @@
       "data-theme",
       value ? "dark" : "light",
     );
-    console.log(value ? "dark" : "light");
   }
 
   /**-----------------------

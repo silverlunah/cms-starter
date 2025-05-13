@@ -7,8 +7,6 @@
   import ModalCreateUser from "./modals/ModalCreateUser.svelte";
   import ModalUpdateUser from "./modals/ModalUpdateUser.svelte";
   import ButtonAdd from "$lib/components/buttons/ButtonAdd.svelte";
-  import AvatarDefault from "$lib/components/user/AvatarDefault.svelte";
-  import AvatarHasImg from "$lib/components/user/AvatarHasImg.svelte";
   import InputSearch from "$lib/components/inputs/InputSearch.svelte";
   import TextBackgroundDateAndTime from "$lib/components/textbackgrounds/TextBackgroundDateAndTime.svelte";
   import TextBackgroundRole from "$lib/components/textbackgrounds/TextBackgroundRole.svelte";
@@ -17,6 +15,7 @@
   import PageWrapper from "$lib/components/pages/PageWrapper.svelte";
   import IndicatorIsLocked from "$lib/components/indicators/IndicatorIsLocked.svelte";
   import Nameplate from "$lib/components/user/Nameplate.svelte";
+  import PageSection from "$lib/components/pages/PageSection.svelte";
 
   let users: User[] = [];
   let selectedUser: User | null = null;
@@ -79,11 +78,11 @@
   {:else if users.length === 0}
     <p>Loading users...</p>
   {:else}
-    <div class="card w-96 md:w-3xl pixel-p p-4 text-center">
-      <PageSectionHeading
-        title="User Management"
-        description="Manage your users in this page. Create, add, disable, and delete users. You can also change or assign roles."
-      />
+    <PageSectionHeading
+      title="User Management"
+      description="Manage your users in this page. Create, add, disable, and delete users. You can also change or assign roles."
+    />
+    <PageSection>
       <div class="flex gap-4">
         <InputSearch
           placeholder="Search"
@@ -96,105 +95,107 @@
           label="New"
         />
       </div>
-      <div class="overflow-x-auto w-full">
-        <table class="table min-w-[800px] mt-4">
-          <!-- head -->
-          <thead>
-            <tr>
-              <th>Status</th>
-              <th>Name</th>
-              <th>Role</th>
-              <th>Date Created</th>
-              <th>Last Updated</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {#each paginatedUsers as user}
-              <tr
-                onclick={() => {
-                  selectedUser = user;
-                  triggerModal("updateUserModal");
-                }}
-              >
-                <!-- Status -->
-                <td class="text-center align-middle">
-                  <div class="flex items-center justify-center gap-3">
-                    <!-- Lock status -->
-                    {#if user.isLocked}
+      <div class="flex flex-col">
+        <div class="overflow-x-auto w-full">
+          <table class="table min-w-[800px] mt-4">
+            <!-- head -->
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Date Created</th>
+                <th>Last Updated</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {#each paginatedUsers as user}
+                <tr
+                  onclick={() => {
+                    selectedUser = user;
+                    triggerModal("updateUserModal");
+                  }}
+                >
+                  <!-- Status -->
+                  <td class="text-center align-middle">
+                    <div class="flex items-center justify-center gap-3">
+                      <!-- Lock status -->
+                      {#if user.isLocked}
+                        <div
+                          class="inline-grid place-items-center *:[grid-area:1/1]"
+                        >
+                          <IndicatorIsLocked />
+                        </div>
+                      {/if}
+                      <!-- Active status -->
                       <div
                         class="inline-grid place-items-center *:[grid-area:1/1]"
                       >
-                        <IndicatorIsLocked />
+                        <div
+                          class="status {user.isActive
+                            ? 'status-success'
+                            : 'status-errorMessage'} animate-ping"
+                        ></div>
+                        <div
+                          class="status {user.isActive
+                            ? 'status-success'
+                            : 'status-errorMessage'}"
+                        ></div>
                       </div>
-                    {/if}
-                    <!-- Active status -->
-                    <div
-                      class="inline-grid place-items-center *:[grid-area:1/1]"
-                    >
-                      <div
-                        class="status {user.isActive
-                          ? 'status-success'
-                          : 'status-errorMessage'} animate-ping"
-                      ></div>
-                      <div
-                        class="status {user.isActive
-                          ? 'status-success'
-                          : 'status-errorMessage'}"
-                      ></div>
                     </div>
-                  </div>
-                </td>
+                  </td>
 
-                <!-- Name -->
-                <td>
-                  <!-- Avatar -->
-                  <Nameplate
-                    avatarUrl={user.avatarUrl}
-                    username={user.username}
-                    firstName={user.firstName}
-                    lastName={user.lastName}
-                    email={user.email}
-                  />
-                </td>
+                  <!-- Name -->
+                  <td>
+                    <!-- Avatar -->
+                    <Nameplate
+                      avatarUrl={user.avatarUrl}
+                      username={user.username}
+                      firstName={user.firstName}
+                      lastName={user.lastName}
+                      email={user.email}
+                    />
+                  </td>
 
-                <!-- Role -->
-                <td>
-                  <TextBackgroundRole role={user.role} />
-                </td>
+                  <!-- Role -->
+                  <td>
+                    <TextBackgroundRole role={user.role} />
+                  </td>
 
-                <!-- Created At -->
-                <td>
-                  {#if user.createdAt === DATE.NOT_YET_UPDATED_INDICATOR}
-                    <TextBackgroundDateAndTime
-                      label={DATE.NOT_YET_UPDATED_STRING}
-                    />
-                  {:else}
-                    <TextBackgroundDateAndTime
-                      label={formatTimeAndDateUS(user.createdAt)}
-                    />
-                  {/if}
-                </td>
+                  <!-- Created At -->
+                  <td>
+                    {#if user.createdAt === DATE.NOT_YET_UPDATED_INDICATOR}
+                      <TextBackgroundDateAndTime
+                        label={DATE.NOT_YET_UPDATED_STRING}
+                      />
+                    {:else}
+                      <TextBackgroundDateAndTime
+                        label={formatTimeAndDateUS(user.createdAt)}
+                      />
+                    {/if}
+                  </td>
 
-                <!-- Updated At -->
-                <td>
-                  {#if user.updatedAt === DATE.NOT_YET_UPDATED_INDICATOR}
-                    <TextBackgroundDateAndTime
-                      label={DATE.NOT_YET_UPDATED_STRING}
-                    />
-                  {:else}
-                    <TextBackgroundDateAndTime
-                      label={formatTimeAndDateUS(user.updatedAt)}
-                    />
-                  {/if}
-                </td>
-              </tr>
-            {/each}
-          </tbody>
-        </table>
+                  <!-- Updated At -->
+                  <td>
+                    {#if user.updatedAt === DATE.NOT_YET_UPDATED_INDICATOR}
+                      <TextBackgroundDateAndTime
+                        label={DATE.NOT_YET_UPDATED_STRING}
+                      />
+                    {:else}
+                      <TextBackgroundDateAndTime
+                        label={formatTimeAndDateUS(user.updatedAt)}
+                      />
+                    {/if}
+                  </td>
+                </tr>
+              {/each}
+            </tbody>
+          </table>
+        </div>
+        <ButtonPagination {totalPages} {currentPage} {goToPage} />
       </div>
-      <ButtonPagination {totalPages} {currentPage} {goToPage} />
-    </div>
+    </PageSection>
   {/if}
   <ModalCreateUser {listenRefreshUser} />
   <ModalUpdateUser {selectedUser} {listenRefreshUser} />

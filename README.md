@@ -1,6 +1,6 @@
-# CMS Starter
+# Silverlunah Backoffice
 
-Startup your CMS using cms-starter! Includes basic auth using JWT & cookies, CRUD for users, and a setting to manage your allowed hosts (CSRF stuff). Easy to setup! After cloning the project, just run the npm commands below.
+Backoffice for silverlunah.com.
 
 ### Pre-requisite
 
@@ -9,7 +9,7 @@ Startup your CMS using cms-starter! Includes basic auth using JWT & cookies, CRU
 ### Pull the project
 
 ```bash
-git clone https://github.com/silverlunah/cms-starter.git
+git clone https://github.com/silverlunah/silverlunah-backoffice.git
 ```
 
 ## Development (Local)

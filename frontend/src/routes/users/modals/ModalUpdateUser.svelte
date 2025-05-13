@@ -465,7 +465,7 @@
           {:else}
             <legend class="fieldset-legend">This user is active</legend>
             <button
-              class="btn btn-accent w-full"
+              class="btn btn-error w-full"
               disabled={selectedUser?.isLocked || selectedUser?.role === 99}
               onclick={() => triggerModal("confirmUserStatusModal")}
               >Disable</button
