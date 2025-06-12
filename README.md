@@ -14,7 +14,7 @@ git clone https://github.com/silverlunah/cms-starter.git
 
 ## Development (Local)
 
-Make sure mysql is running. You can run mysql docker daemon if you want.
+Make sure mysql is running and matching your .env. You can run mysql docker daemon if you want, just follow the docker setup below then close backend and frontend containers leaving mysql.
 
 ### Starting the frontend and backend projects
 
@@ -51,7 +51,7 @@ npm run prisma:update:table
 npm run prisma:migrate:reset
 ```
 
-## Developing (Docker)
+## Development (Docker)
 
 ### Starting the project using Docker (Production Simulation)
 
