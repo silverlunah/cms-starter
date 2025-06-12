@@ -4,16 +4,17 @@
   "main": "index.js",
   "scripts": {
     "init": "npm install && cd backend && npm install && cd ../frontend && npm install",
-    "docker:up": "npm run init && node scripts/generate-env.js && node scripts/docker-up.js",
+    "docker:up": "npm run init && node scripts/generate-env/docker.js && node scripts/docker-up.js",
     "docker:down": "node scripts/docker-down.js",
     "docker:restart": "npm run docker:down && npm run init && npm run docker:up",
-    "local:backend:up": "npm run local:generate:env && cd backend && npm install && npm run dev",
-    "local:frontend:up": "npm run local:generate:env && cd frontend && npm install && npm run dev",
+    "local:backend:up": "npm run local:backend:generate:env && cd backend && npm install && npm run dev",
+    "local:frontend:up": "npm run local:frontend:generate:env && cd frontend && npm install && npm run dev",
     "local:up": "concurrently \"npm run local:backend:up\" \"npm run local:frontend:up\"",
-    "local:generate:env": "node scripts/generate-env.js",
+    "local:backend:generate:env": "node scripts/generate-env/local-backend.js",
+    "local:frontend:generate:env": "node scripts/generate-env/local-frontend.js",
     "prisma:update:tables": "node scripts/prisma-update-tables.js",
     "prisma:migrate:reset": "node scripts/prisma-migrate-reset.js",
-    "prepare": "husky install"
+    "prepare": "husky"
   },
   "lint-staged": {
     "backend/src/**/*.{ts,js}": "npm run --prefix backend format",
