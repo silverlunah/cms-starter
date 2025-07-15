@@ -1,10 +1,14 @@
 <script lang="ts">
-  export let onclick: () => void;
-  export let label: string;
-  export let additionalClass: string = "";
+  interface Props {
+    onclick: () => void;
+    label: string;
+    additionalClass?: string;
+  }
+
+  let { onclick, label, additionalClass = "" }: Props = $props();
 </script>
 
-<button class={"btn btn-success " + additionalClass} on:click={onclick}>
+<button class={"btn btn-success " + additionalClass} {onclick}>
   <svg
     xmlns="http://www.w3.org/2000/svg"
     fill="none"

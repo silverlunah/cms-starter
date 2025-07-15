@@ -1,7 +1,11 @@
 <script lang="ts">
-  export let value: string;
-  export let additionalClass: string;
-  export let placeholder: string;
+  interface Props {
+    value: string;
+    additionalClass: string;
+    placeholder: string;
+  }
+
+  let { value = $bindable(), additionalClass, placeholder }: Props = $props();
 </script>
 
 <label class={"input " + additionalClass}>

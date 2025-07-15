@@ -1,8 +1,12 @@
 <script lang="ts">
-  export let imgUrl: string;
-  export let size: "sm" | "md" | "lg";
+  interface Props {
+    imgUrl: string;
+    size: "sm" | "md" | "lg";
+  }
 
-  let avatarSize: string;
+  let { imgUrl, size }: Props = $props();
+
+  let avatarSize: string = $state();
 
   switch (size) {
     default:

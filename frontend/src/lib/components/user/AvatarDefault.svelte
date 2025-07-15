@@ -1,11 +1,15 @@
 <script lang="ts">
-  export let firstName: string;
-  export let lastName: string;
-  export let size: "sm" | "md" | "lg";
 
   import { getFirstAndLastNameInitials } from "$lib/utils/common";
+  interface Props {
+    firstName: string;
+    lastName: string;
+    size: "sm" | "md" | "lg";
+  }
 
-  let elementSizes: string;
+  let { firstName, lastName, size }: Props = $props();
+
+  let elementSizes: string = $state();
 
   switch (size) {
     default:

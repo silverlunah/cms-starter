@@ -1,12 +1,25 @@
 <script lang="ts">
-  export let value: string;
-  export let label: string;
-  export let placeholder: string = "";
-  export let fieldSetAdditionalClass: string = "";
-  export let inputAdditionalClass: string = "";
-  export let fieldError: string | null = null;
-  export let description: string = "";
-  export let disabled: boolean = false; // Add disabled prop
+  interface Props {
+    value: string;
+    label: string;
+    placeholder?: string;
+    fieldSetAdditionalClass?: string;
+    inputAdditionalClass?: string;
+    fieldError?: string | null;
+    description?: string;
+    disabled?: boolean; // Add disabled prop
+  }
+
+  let {
+    value = $bindable(),
+    label,
+    placeholder = "",
+    fieldSetAdditionalClass = "",
+    inputAdditionalClass = "",
+    fieldError = null,
+    description = "",
+    disabled = false
+  }: Props = $props();
 </script>
 
 <fieldset class={"fieldset " + fieldSetAdditionalClass}>

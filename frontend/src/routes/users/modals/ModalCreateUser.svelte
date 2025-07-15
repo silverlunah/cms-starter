@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { z } from "zod";
   import { onMount } from "svelte";
   import type { User } from "$lib/types/user";
   import { closeModal } from "$lib/utils/common";
@@ -13,33 +12,37 @@
   import Modal from "$lib/components/modals/Modal.svelte";
   import { createUserSchema } from "$lib/zschemas/createUserSchema";
 
-  export let selectedUser: User | null = null;
-  export let listenRefreshUser: () => void;
+  interface Props {
+    selectedUser?: User | null;
+    listenRefreshUser: () => void;
+  }
+
+  let { selectedUser = null, listenRefreshUser }: Props = $props();
 
   /**-----------------------
    *  User Form Variables
    -----------------------*/
-  let errorMessage = "";
+  let errorMessage = $state("");
 
-  let firstName = "";
-  let lastName = "";
-  let username = "";
-  let email = "";
-  let address = "";
-  let occupation = "";
-  let organization = "";
-  let password = "";
-  let confirmPassword = "";
-  let role = 0;
+  let firstName = $state("");
+  let lastName = $state("");
+  let username = $state("");
+  let email = $state("");
+  let address = $state("");
+  let occupation = $state("");
+  let organization = $state("");
+  let password = $state("");
+  let confirmPassword = $state("");
+  let role = $state(0);
 
-  let fieldErrors: Record<string, string> = {
+  let fieldErrors: Record<string, string> = $state({
     email: "",
     password: "",
     confirmPassword: "",
     firstName: "",
     lastName: "",
     username: "",
-  };
+  });
 
   /**-----------------------
    *   General Functions
@@ -63,7 +66,7 @@
           acc[error.path[0]] = error.message;
           return acc;
         },
-        {},
+        {}
       );
       return false;
     }
@@ -91,7 +94,7 @@
         occupation,
         organization,
         password,
-        role,
+        role
       );
 
       triggerNotification("Successfully created " + email, "success");

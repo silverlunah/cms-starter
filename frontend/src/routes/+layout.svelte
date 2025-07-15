@@ -1,8 +1,13 @@
 <script lang="ts">
-  import { page } from "$app/stores";
+  import { page } from "$app/state";
   import Navbar from "$lib/components/Navbar.svelte";
   import Notification from "$lib/components/notification/Notification.svelte";
   import "../app.css";
+  interface Props {
+    children?: import('svelte').Snippet;
+  }
+
+  let { children }: Props = $props();
 </script>
 
 <svelte:head>
@@ -18,8 +23,8 @@
   />
 </svelte:head>
 
-{#if $page.url.pathname !== "/"}
+{#if page.url.pathname !== "/"}
   <Navbar />
 {/if}
-<slot />
+{@render children?.()}
 <Notification />

@@ -1,8 +1,12 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  let isDark = false;
+  let isDark = $state(false);
 
-  export let additionalClass: string = "";
+  interface Props {
+    additionalClass?: string;
+  }
+
+  let { additionalClass = "" }: Props = $props();
 
   /**-----------------------
    *   General functions
@@ -33,7 +37,7 @@
       type="checkbox"
       value={isDark ? "dark" : "light"}
       class="theme-controller"
-      on:change={() => setTheme(!isDark)}
+      onchange={() => setTheme(!isDark)}
       bind:checked={isDark}
     />
     <!-- sun icon -->

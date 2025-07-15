@@ -2,12 +2,23 @@
   import AvatarDefault from "./AvatarDefault.svelte";
   import AvatarHasImg from "./AvatarHasImg.svelte";
 
-  export let avatarUrl: string = "";
-  export let username: string;
-  export let firstName: string;
-  export let lastName: string;
-  export let email: string;
-  export let additionalClass: string = "";
+  interface Props {
+    avatarUrl?: string;
+    username: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    additionalClass?: string;
+  }
+
+  let {
+    avatarUrl = "",
+    username,
+    firstName,
+    lastName,
+    email,
+    additionalClass = ""
+  }: Props = $props();
 </script>
 
 <div class={"flex items-center gap-3 " + additionalClass}>

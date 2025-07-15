@@ -1,11 +1,20 @@
 <script lang="ts">
-  export let label: string;
-  export let onclick: () => void;
-  export let additionalClass: string = "";
-  export let type: "button" | "submit" | "reset" = "button";
+  interface Props {
+    label: string;
+    onclick: () => void;
+    additionalClass?: string;
+    type?: "button" | "submit" | "reset";
+  }
+
+  let {
+    label,
+    onclick,
+    additionalClass = "",
+    type = "button"
+  }: Props = $props();
 </script>
 
-<button {type} class={"btn " + additionalClass} on:click={onclick}>
+<button {type} class={"btn " + additionalClass} {onclick}>
   <svg
     xmlns="http://www.w3.org/2000/svg"
     fill="none"

@@ -5,9 +5,9 @@
   import { isLoggedIn } from "$lib/stores/auth";
   import { currentUser } from "$lib/stores/currentUser";
 
-  let email = "";
-  let password = "";
-  let error = "";
+  let email = $state("");
+  let password = $state("");
+  let error = $state("");
 
   async function handleLogin() {
     const res = await fetch(PUBLIC_API_URL + "/login", {
@@ -22,7 +22,7 @@
       localStorage.setItem("user", JSON.stringify(data.user));
       currentUser.set(data.user);
       isLoggedIn.set(true);
-      await goto("/profile");
+      await goto("/dashboard");
     } else {
       error = "Invalid credentials";
     }
@@ -37,7 +37,7 @@
 
 <div class="relative overflow-hidden p-4 w-full h-screen">
   <form
-    on:submit|preventDefault={handleLogin}
+    onsubmit={handleLogin}
     class="max-w-sm mx-auto relative flex flex-col items-center p-4 gap-4"
   >
     <h1 class="font-bold text-center text-7xl md:text-4xl">CMS Starter</h1>
@@ -57,7 +57,7 @@
         placeholder="Password"
         required
         class="input input-bordered w-full mb-4"
-        on:keydown={handleKeyDown}
+        onkeydown={handleKeyDown}
       />
       <button type="submit" class="btn btn-primary w-full">Let's Go!</button>
 

@@ -18,23 +18,18 @@
   import PageSection from "$lib/components/pages/PageSection.svelte";
   import LoadingIndicatorPage from "$lib/components/loading/LoadingIndicatorPage.svelte";
 
-  let users: User[] = [];
-  let selectedUser: User | null = null;
+  let users: User[] = $state([]);
+  let selectedUser: User | null = $state(null);
 
   let errorMessage: string | null = null;
 
   /**-----------------------
    *   Users Pagination
    -----------------------*/
-  let currentPage = 1;
+  let currentPage = $state(1);
   const usersPerPage = 10;
 
-  $: totalPages = Math.ceil(filteredUsers.length / usersPerPage);
 
-  $: paginatedUsers = filteredUsers.slice(
-    (currentPage - 1) * usersPerPage,
-    currentPage * usersPerPage,
-  );
 
   function goToPage(page: number) {
     if (page >= 1 && page <= totalPages) {
@@ -53,13 +48,8 @@
   /**-----------------------
    *  Reactive Statements
     -----------------------*/
-  let searchQuery = "";
+  let searchQuery = $state("");
 
-  $: filteredUsers = users.filter((user) =>
-    `${user.firstName} ${user.lastName} ${user.email}`
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase()),
-  );
 
   /**-----------------------
    *  onMount Activities
@@ -67,6 +57,16 @@
   onMount(async () => {
     users = await getUsers();
   });
+  let filteredUsers = $derived(users.filter((user) =>
+    `${user.firstName} ${user.lastName} ${user.email}`
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase()),
+  ));
+  let totalPages = $derived(Math.ceil(filteredUsers.length / usersPerPage));
+  let paginatedUsers = $derived(filteredUsers.slice(
+    (currentPage - 1) * usersPerPage,
+    currentPage * usersPerPage,
+  ));
 </script>
 
 <svelte:head>

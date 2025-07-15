@@ -1,5 +1,9 @@
 <script lang="ts">
-  export let role: number;
+  interface Props {
+    role: number;
+  }
+
+  let { role }: Props = $props();
 </script>
 
 {#if role === 0}

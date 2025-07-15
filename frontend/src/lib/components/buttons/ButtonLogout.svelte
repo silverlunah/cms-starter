@@ -3,7 +3,11 @@
   import { PUBLIC_API_URL } from "$env/static/public";
   import { isLoggedIn } from "$lib/stores/auth";
 
-  export let additionalClass: string = "";
+  interface Props {
+    additionalClass?: string;
+  }
+
+  let { additionalClass = "" }: Props = $props();
   /**-----------------------
    *    Logout function
   -----------------------*/

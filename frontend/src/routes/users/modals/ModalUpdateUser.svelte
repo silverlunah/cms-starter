@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { z } from "zod";
   import type { User } from "$lib/types/user";
   import {
     closeModal,
@@ -22,57 +21,64 @@
   import InputFormField from "$lib/components/inputs/InputFormField.svelte";
   import { updateUserSchema } from "$lib/zschemas/updateUserSchema";
 
-  export let selectedUser: User | null = null;
-  export let listenRefreshUser: () => void;
+  interface Props {
+    selectedUser?: User | null;
+    listenRefreshUser: () => void;
+  }
+
+  let { selectedUser = $bindable(null), listenRefreshUser }: Props = $props();
 
   let users: User[] = [];
-  let confirmDeleteEmail = "";
-  let errorMessage = "";
+  let confirmDeleteEmail = $state("");
+  let errorMessage = $state("");
 
   /**-----------------------
    *    Form Variables
    -----------------------*/
-  let firstName = "";
-  let lastName = "";
-  let username = "";
-  let email = "";
-  let address = "";
-  let occupation = "";
-  let organization = "";
-  let password = "";
-  let confirmPassword = "";
-  let role = 0;
+  let firstName = $state("");
+  let lastName = $state("");
+  let username = $state("");
+  let email = $state("");
+  let address = $state("");
+  let occupation = $state("");
+  let organization = $state("");
+  let password = $state("");
+  let confirmPassword = $state("");
+  let role = $state(0);
 
-  let fieldErrors: Record<string, string> = {};
+  let fieldErrors: Record<string, string> = $state({});
 
   /**-----------------------
    *  Reactive Statements
     -----------------------*/
-  $: if (selectedUser) {
-    firstName = selectedUser.firstName;
-    lastName = selectedUser.lastName;
-    username = selectedUser.username;
-    email = selectedUser.email;
-    address = selectedUser.address;
-    occupation = selectedUser.occupation;
-    organization = selectedUser.organization;
-    role = selectedUser.role;
-  }
+  $effect(() => {
+    if (selectedUser) {
+      firstName = selectedUser.firstName;
+      lastName = selectedUser.lastName;
+      username = selectedUser.username;
+      email = selectedUser.email;
+      address = selectedUser.address;
+      occupation = selectedUser.occupation;
+      organization = selectedUser.organization;
+      role = selectedUser.role;
+    }
+  });
 
-  $: isDirty =
+  let isDirty = $derived(
     selectedUser &&
-    (firstName !== selectedUser.firstName ||
-      lastName !== selectedUser.lastName ||
-      username !== selectedUser.username ||
-      address !== selectedUser.address ||
-      occupation !== selectedUser.occupation ||
-      organization !== selectedUser.organization ||
-      email.toLowerCase() !== selectedUser.email.toLowerCase() ||
-      role !== selectedUser.role ||
-      password.length > 0 || // only care if password is being updated
-      confirmPassword.length > 0);
+      (firstName !== selectedUser.firstName ||
+        lastName !== selectedUser.lastName ||
+        username !== selectedUser.username ||
+        address !== selectedUser.address ||
+        occupation !== selectedUser.occupation ||
+        organization !== selectedUser.organization ||
+        email.toLowerCase() !== selectedUser.email.toLowerCase() ||
+        role !== selectedUser.role ||
+        password.length > 0 || // only care if password is being updated
+        confirmPassword.length > 0)
+  );
 
-  $: roleSelectDisabled = selectedUser?.isLocked ?? false;
+  let roleSelectDisabled = $derived(selectedUser?.isLocked ?? false);
 
   /**-----------------------
    *   General Functions
@@ -113,7 +119,7 @@
           acc[error.path[0] as string] = error.message;
           return acc;
         },
-        {} as Record<string, string>,
+        {} as Record<string, string>
       );
       return false;
     }
@@ -136,7 +142,7 @@
               role,
               // password usually omitted for security
             }
-          : null,
+          : null
       );
       const updatedUser: CurrentUser = {
         id: $currentUser?.id ?? "",
@@ -173,7 +179,7 @@
         occupation,
         organization,
         password,
-        role,
+        role
       );
 
       triggerNotification("Successfully edited " + email, "success");
@@ -205,7 +211,7 @@
 
       triggerNotification(
         "Successfully " + statusInMessage + " " + selectedUser.email,
-        "success",
+        "success"
       );
 
       selectedUser = null;
@@ -213,7 +219,7 @@
       closeModal("updateUserModal");
     } catch (err) {
       alert(
-        err instanceof Error ? err.message : "An unexpected error occurred",
+        err instanceof Error ? err.message : "An unexpected error occurred"
       );
     }
 
@@ -230,7 +236,7 @@
 
       triggerNotification(
         "Successfully created " + selectedUser.email,
-        "success",
+        "success"
       );
 
       selectedUser = null;
@@ -238,7 +244,7 @@
       closeModal("updateUserModal");
     } catch (err) {
       alert(
-        err instanceof Error ? err.message : "An unexpected error occurred",
+        err instanceof Error ? err.message : "An unexpected error occurred"
       );
     }
 

@@ -1,15 +1,25 @@
 <script lang="ts">
-  export let label: string;
-  export let onclick: () => void;
-  export let disabled: boolean = false;
-  export let additionalClass: string = "";
-  export let type: "button" | "submit" | "reset" = "button";
+  interface Props {
+    label: string;
+    onclick: () => void;
+    disabled?: boolean;
+    additionalClass?: string;
+    type?: "button" | "submit" | "reset";
+  }
+
+  let {
+    label,
+    onclick,
+    disabled = false,
+    additionalClass = "",
+    type = "button"
+  }: Props = $props();
 </script>
 
 <button
   {type}
   class={"btn btn-error " + additionalClass}
-  on:click={onclick}
+  {onclick}
   {disabled}
 >
   <svg

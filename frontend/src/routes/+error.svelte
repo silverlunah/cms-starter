@@ -1,6 +1,6 @@
 <!-- src/routes/+error.svelte -->
-<script>
-  export let status;
+<script lang="ts">
+  let { status } = $props();
 </script>
 
 <svelte:head>

@@ -29,36 +29,36 @@
   import { createAllowedHostSchema } from "$lib/zschemas/createAllowedHostSchema";
   import { updateAllowedHostSchema } from "$lib/zschemas/updateAllowedHostSchema";
 
-  let error: string | null = null;
-  let allowedHosts: AllowedHost[] = [];
-  let selectedAllowedHost: AllowedHost | null = null;
+  let error: string | null = $state(null);
+  let allowedHosts: AllowedHost[] = $state([]);
+  let selectedAllowedHost: AllowedHost | null = $state(null);
 
-  let fieldErrors: { [key: string]: string } = {};
+  let fieldErrors: { [key: string]: string } = $state({});
 
-  let createDisplayName = "";
-  let createUrl = "";
+  let createDisplayName = $state("");
+  let createUrl = $state("");
 
-  let updateDisplayName = "";
-  let updateUrl = "";
+  let updateDisplayName = $state("");
+  let updateUrl = $state("");
 
-  let isAddingNewHost = false;
+  let isAddingNewHost = $state(false);
 
-  let editingDisplayNameId: string | null = null;
-  let editingUrlId: string | null = null;
-  let editedValue = "";
+  let editingDisplayNameId: string | null = $state(null);
+  let editingUrlId: string | null = $state(null);
+  let editedValue = $state("");
 
   /**-----------------------
    *   Users Pagination
    -----------------------*/
-  let currentPage = 1;
+  let currentPage = $state(1);
   const usersPerPage = 5;
 
-  $: totalPages = Math.ceil(allowedHosts.length / usersPerPage);
+  let totalPages = $derived(Math.ceil(allowedHosts.length / usersPerPage));
 
-  $: paginatedAllowedHosts = allowedHosts.slice(
+  let paginatedAllowedHosts = $derived(allowedHosts.slice(
     (currentPage - 1) * usersPerPage,
     currentPage * usersPerPage,
-  );
+  ));
 
   function goToPage(page: number) {
     if (page >= 1 && page <= totalPages) {
@@ -341,9 +341,9 @@
                       class="input min-w-44 {fieldErrors.updateDisplayName
                         ? 'input-error'
                         : ''}"
-                      on:blur={(e) =>
+                      onblur={(e) =>
                         handleKeyOrBlur(e, allowedHost.id, "displayName")}
-                      on:keydown={(e) =>
+                      onkeydown={(e) =>
                         handleKeyOrBlur(e, allowedHost.id, "displayName")}
                       autofocus
                     />
@@ -362,7 +362,7 @@
                       ) === normalizeUrl(window.location.origin)
                         ? 'cursor-not-allowed text-gray-400'
                         : 'cursor-pointer'}"
-                      on:click={normalizeUrl(allowedHost.url) !==
+                      onclick={normalizeUrl(allowedHost.url) !==
                       normalizeUrl(window.location.origin)
                         ? () =>
                             startEditing(
@@ -387,8 +387,8 @@
                       class="input min-w-44 {fieldErrors.updateUrl
                         ? 'input-error'
                         : ''}"
-                      on:blur={(e) => handleKeyOrBlur(e, allowedHost.id, "url")}
-                      on:keydown={(e) =>
+                      onblur={(e) => handleKeyOrBlur(e, allowedHost.id, "url")}
+                      onkeydown={(e) =>
                         handleKeyOrBlur(e, allowedHost.id, "url")}
                       autofocus
                     />
@@ -407,7 +407,7 @@
                       ) === normalizeUrl(window.location.origin)
                         ? 'cursor-not-allowed text-gray-400'
                         : 'cursor-pointer'}"
-                      on:click={normalizeUrl(allowedHost.url) !==
+                      onclick={normalizeUrl(allowedHost.url) !==
                       normalizeUrl(window.location.origin)
                         ? () =>
                             startEditing(allowedHost.id, allowedHost.url, "url")
