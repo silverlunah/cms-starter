@@ -12,7 +12,7 @@
     onclick,
     disabled = false,
     additionalClass = "",
-    type = "button"
+    type = "button",
   }: Props = $props();
 </script>
 

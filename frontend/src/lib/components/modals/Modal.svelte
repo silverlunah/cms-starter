@@ -3,15 +3,10 @@
     id: string;
     label: string;
     additionalClass?: string;
-    children?: import('svelte').Snippet;
+    children?: import("svelte").Snippet;
   }
 
-  let {
-    id,
-    label,
-    additionalClass = "",
-    children
-  }: Props = $props();
+  let { id, label, additionalClass = "", children }: Props = $props();
 </script>
 
 <dialog {id} class="modal">

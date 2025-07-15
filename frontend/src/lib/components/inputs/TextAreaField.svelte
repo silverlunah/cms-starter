@@ -18,7 +18,7 @@
     inputAdditionalClass = "",
     fieldError = null,
     description = "",
-    disabled = false
+    disabled = false,
   }: Props = $props();
 </script>
 

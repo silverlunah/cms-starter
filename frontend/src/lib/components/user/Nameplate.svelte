@@ -17,7 +17,7 @@
     firstName,
     lastName,
     email,
-    additionalClass = ""
+    additionalClass = "",
   }: Props = $props();
 </script>
 

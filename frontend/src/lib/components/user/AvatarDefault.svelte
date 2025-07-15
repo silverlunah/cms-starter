@@ -1,5 +1,4 @@
 <script lang="ts">
-
   import { getFirstAndLastNameInitials } from "$lib/utils/common";
   interface Props {
     firstName: string;

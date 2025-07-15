@@ -55,10 +55,12 @@
 
   let totalPages = $derived(Math.ceil(allowedHosts.length / usersPerPage));
 
-  let paginatedAllowedHosts = $derived(allowedHosts.slice(
-    (currentPage - 1) * usersPerPage,
-    currentPage * usersPerPage,
-  ));
+  let paginatedAllowedHosts = $derived(
+    allowedHosts.slice(
+      (currentPage - 1) * usersPerPage,
+      currentPage * usersPerPage,
+    ),
+  );
 
   function goToPage(page: number) {
     if (page >= 1 && page <= totalPages) {

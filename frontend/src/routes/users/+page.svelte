@@ -29,8 +29,6 @@
   let currentPage = $state(1);
   const usersPerPage = 10;
 
-
-
   function goToPage(page: number) {
     if (page >= 1 && page <= totalPages) {
       currentPage = page;
@@ -50,23 +48,26 @@
     -----------------------*/
   let searchQuery = $state("");
 
-
   /**-----------------------
    *  onMount Activities
    -----------------------*/
   onMount(async () => {
     users = await getUsers();
   });
-  let filteredUsers = $derived(users.filter((user) =>
-    `${user.firstName} ${user.lastName} ${user.email}`
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase()),
-  ));
+  let filteredUsers = $derived(
+    users.filter((user) =>
+      `${user.firstName} ${user.lastName} ${user.email}`
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()),
+    ),
+  );
   let totalPages = $derived(Math.ceil(filteredUsers.length / usersPerPage));
-  let paginatedUsers = $derived(filteredUsers.slice(
-    (currentPage - 1) * usersPerPage,
-    currentPage * usersPerPage,
-  ));
+  let paginatedUsers = $derived(
+    filteredUsers.slice(
+      (currentPage - 1) * usersPerPage,
+      currentPage * usersPerPage,
+    ),
+  );
 </script>
 
 <svelte:head>

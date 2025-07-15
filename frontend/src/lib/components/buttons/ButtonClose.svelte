@@ -10,7 +10,7 @@
     label,
     onclick,
     additionalClass = "",
-    type = "button"
+    type = "button",
   }: Props = $props();
 </script>
 

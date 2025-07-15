@@ -12,16 +12,11 @@
     onclick,
     disabled = false,
     additionalClass = "",
-    type = "button"
+    type = "button",
   }: Props = $props();
 </script>
 
-<button
-  {type}
-  class={"btn btn-error " + additionalClass}
-  {onclick}
-  {disabled}
->
+<button {type} class={"btn btn-error " + additionalClass} {onclick} {disabled}>
   <svg
     xmlns="http://www.w3.org/2000/svg"
     fill="none"

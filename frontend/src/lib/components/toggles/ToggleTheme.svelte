@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
+
   let isDark = $state(false);
 
   interface Props {
@@ -8,39 +9,30 @@
 
   let { additionalClass = "" }: Props = $props();
 
-  /**-----------------------
-   *   General functions
-  -----------------------*/
-  function setTheme(value: boolean) {
-    isDark = value;
-    localStorage.setItem("isdark", JSON.stringify(value));
+  $effect(() => {
+    localStorage.setItem("isdark", JSON.stringify(isDark));
     document.documentElement.setAttribute(
       "data-theme",
-      value ? "dark" : "light",
+      isDark ? "dark" : "light"
     );
-  }
+  });
 
-  /**-----------------------
-   *    onMount Activities
-  -----------------------*/
   onMount(() => {
     const stored = localStorage.getItem("isdark");
-    const saved = stored ? JSON.parse(stored) : false;
-    setTheme(saved);
+    isDark = stored ? JSON.parse(stored) === true : false;
   });
 </script>
 
 <div class={additionalClass}>
-  <label class={"swap swap-rotate"}>
-    <!-- this hidden checkbox controls the state -->
+  <label class="swap swap-rotate">
+    <!-- Hidden checkbox -->
     <input
       type="checkbox"
-      value={isDark ? "dark" : "light"}
-      class="theme-controller"
-      onchange={() => setTheme(!isDark)}
+      class="theme-controller hidden"
       bind:checked={isDark}
     />
-    <!-- sun icon -->
+
+    <!-- Sun icon -->
     <svg
       class="swap-off h-6 w-6 fill-current"
       xmlns="http://www.w3.org/2000/svg"
@@ -51,7 +43,7 @@
       />
     </svg>
 
-    <!-- moon icon -->
+    <!-- Moon icon -->
     <svg
       class="swap-on h-6 w-6 fill-current"
       xmlns="http://www.w3.org/2000/svg"

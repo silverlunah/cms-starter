@@ -75,7 +75,7 @@
         email.toLowerCase() !== selectedUser.email.toLowerCase() ||
         role !== selectedUser.role ||
         password.length > 0 || // only care if password is being updated
-        confirmPassword.length > 0)
+        confirmPassword.length > 0),
   );
 
   let roleSelectDisabled = $derived(selectedUser?.isLocked ?? false);
@@ -119,7 +119,7 @@
           acc[error.path[0] as string] = error.message;
           return acc;
         },
-        {} as Record<string, string>
+        {} as Record<string, string>,
       );
       return false;
     }
@@ -142,7 +142,7 @@
               role,
               // password usually omitted for security
             }
-          : null
+          : null,
       );
       const updatedUser: CurrentUser = {
         id: $currentUser?.id ?? "",
@@ -179,7 +179,7 @@
         occupation,
         organization,
         password,
-        role
+        role,
       );
 
       triggerNotification("Successfully edited " + email, "success");
@@ -211,7 +211,7 @@
 
       triggerNotification(
         "Successfully " + statusInMessage + " " + selectedUser.email,
-        "success"
+        "success",
       );
 
       selectedUser = null;
@@ -219,7 +219,7 @@
       closeModal("updateUserModal");
     } catch (err) {
       alert(
-        err instanceof Error ? err.message : "An unexpected error occurred"
+        err instanceof Error ? err.message : "An unexpected error occurred",
       );
     }
 
@@ -236,7 +236,7 @@
 
       triggerNotification(
         "Successfully created " + selectedUser.email,
-        "success"
+        "success",
       );
 
       selectedUser = null;
@@ -244,7 +244,7 @@
       closeModal("updateUserModal");
     } catch (err) {
       alert(
-        err instanceof Error ? err.message : "An unexpected error occurred"
+        err instanceof Error ? err.message : "An unexpected error occurred",
       );
     }
 

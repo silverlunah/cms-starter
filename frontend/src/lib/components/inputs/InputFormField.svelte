@@ -20,7 +20,7 @@
     fieldError = null,
     type = "",
     description = "",
-    disabled = false
+    disabled = false,
   }: Props = $props();
 </script>
 

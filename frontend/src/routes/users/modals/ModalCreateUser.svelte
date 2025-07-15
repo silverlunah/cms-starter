@@ -66,7 +66,7 @@
           acc[error.path[0]] = error.message;
           return acc;
         },
-        {}
+        {},
       );
       return false;
     }
@@ -94,7 +94,7 @@
         occupation,
         organization,
         password,
-        role
+        role,
       );
 
       triggerNotification("Successfully created " + email, "success");
