@@ -41,7 +41,7 @@ npm run docker:restart
 
 
 ## Development (Local)
-Recommended for hot reload.
+Recommended during development.
 
 ### Pre-requisuite
 1. Take down frontend and backend container if its still running in docker
