@@ -6,7 +6,7 @@ const backendPath = path.join(__dirname, "../backend");
 const migrationsPath = path.join(backendPath, "prisma/migrations");
 
 // Step 1: Run `prisma migrate dev` to create a single migration file
-const migrationName = process.argv[2] || "initial-migration"; // Default to 'initial-migration' if none provided
+const migrationName = process.argv[2] || "migration";
 try {
   console.log(`
 ==============================================================
