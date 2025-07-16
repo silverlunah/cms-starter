@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
 
   let isDark = $state(false);
+  let ready = $state(false);
 
   interface Props {
     additionalClass?: string;
@@ -9,17 +10,19 @@
 
   let { additionalClass = "" }: Props = $props();
 
-  $effect(() => {
-    localStorage.setItem("isdark", JSON.stringify(isDark));
-    document.documentElement.setAttribute(
-      "data-theme",
-      isDark ? "dark" : "light"
-    );
-  });
-
   onMount(() => {
     const stored = localStorage.getItem("isdark");
     isDark = stored ? JSON.parse(stored) === true : false;
+    ready = true;
+  });
+
+  $effect(() => {
+    if (!ready) return;
+    localStorage.setItem("isdark", JSON.stringify(isDark));
+    document.documentElement.setAttribute(
+      "data-theme",
+      isDark ? "synthwave" : "emerald"
+    );
   });
 </script>
 
